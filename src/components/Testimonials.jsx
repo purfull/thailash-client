@@ -36,7 +36,7 @@ const Testimonials = () => {
     ]
 
     return (
-        <div id="reviews" className="h-[100vh] flex flex-col justify-center items-center">
+        <div id="reviews" className="h-[100vh] w-[85%] flex flex-col justify-center items-center">
             <div className="text-center text-[#056E3D]">
                 {/* <h1 className="text-4xl font-bold">Testimonials</h1> */}
                 <img src={testimonial} className="w-[65%] mx-auto" alt="" />

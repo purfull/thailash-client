@@ -57,6 +57,7 @@ const Faq = () => {
     };
 
     return (
+        <div className="w-[85%]">
         <div className="faq-section w-[80%]">
             <h2 className='text-center text-[#056E3D] font-bold'>FAQ</h2>
             <img src={faq} className='w-[60%] mx-auto mb-[6vh]' alt="" />
@@ -79,6 +80,7 @@ const Faq = () => {
                     )}
                 </div>
             ))}
+        </div>
         </div>
     );
 };

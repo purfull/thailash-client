@@ -13,10 +13,13 @@ import tagline from '../assets/text/tagline.png'
 import tick from '../assets/icons/verified-tick.svg'
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight } from 'react-icons/ai';
 import { Link } from 'react-scroll';
+import { useNavigate } from 'react-router-dom';
+import Footer from './Footer';
 
 
 const Home = () => {
   const mainSliderRef = useRef(null);
+  const navigate = useNavigate();
   const [navIndex, setNavIndex] = useState(0);
 
   const mainSettings = {
@@ -40,11 +43,25 @@ const Home = () => {
     infinite: false,
   };
 
+  const handleCheckoutClick = () => {
+    navigate('/checkout');
+  };
     return ( 
-      <div id='home' >
+      <div id='home' className='w-[85%]' >
+        <div className='price-container h-[86vh] w-[15%] shadow-md border-l border-[#046E3D40]  fixed bottom-0 right-0 z-[200] bg-[#E9FFF3]'>
+          <p className='font-semibold text-lg p-2 mt-[5vh]'>FREE delivery Wed, 25 Dec on ₹499 of items fulfilled by Amazon.</p>
+          <p className=' text  p-2 '>Thailash Thennamarakudi Oil From Original Thennamarakudi Origin Ayurvedic Pain Relief Oil for Joint, Muscular Pain 100ML (pack of 2)</p>
+          <p className=' font-semibold text-lg  px-2 mt-4 '>Now at <span className='text-red-600 '>{`-${17}%`}</span></p>
+          <p className=' text  px-2 '><span className=' text mr-2' style={{textDecoration: 'line-through'}}>₹{300}</span><span className='text-2xl font-semibold'>₹{249}</span></p>  
+            <div className="mt-8 flex flex-col justify-center items-center">
+              {/* <button className='mr-4 py-[7px] w-[90%] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold'>More Info</button> */}
+              <button className=' py-[7px] w-[90%] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47]' onClick={handleCheckoutClick}>Buy Now</button>
+            </div>
+
+        </div>
         
         <div className="h-[100vh] flex items-end justify-evenly">
-          <div className="container-fluid w-[30%] p-0 pb-5 mb-6">
+          <div className="container-fluid w-[33%] p-0 pb-5 mb-6">
             <Slider {...mainSettings}>
               {carouselItems.map((item, index) => (
                 <div key={index} className="position-relative ">
@@ -70,14 +87,14 @@ const Home = () => {
               </Slider>
             </div>
           </div>
-          <div className="w-[60%] h-[70vh] pb-5 pl-[10vw]">
-            <img src={title} className='w-[85%]' alt="" />
-            <p className='text-[#056E3D] w-[85%] font-semibold'>We offer a natural solution for sprains, muscle stiffness, back pain, neck pain, arthritis, rheumatism, ligament tears, frozen shoulder, blood clots, and swelling.
+          <div className="w-[55%] h-[70vh] pb-5 pl-[5vw]">
+            <img src={title} className='w-[90%]' alt="" />
+            <p className='text-[#056E3D] w-[90%] font-semibold'>We offer a natural solution for sprains, muscle stiffness, back pain, neck pain, arthritis, rheumatism, ligament tears, frozen shoulder, blood clots, and swelling.
             Thailash Thennamarakudi Oil has been trusted by generations for complete bone and nerve-related issues
             </p>
             <div className="mt-8 flex items-center">
               <button className='mr-4 py-[7px] w-[10vw] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold'>More Info</button>
-              <button className='mr-4 py-[7px] w-[10vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47]'>Buy Now</button>
+              {/* <button className='mr-4 py-[7px] w-[10vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47]'>Buy Now</button> */}
               <button to="/shop" className='p-[14px] rounded-full border-2 bg-[#056E3D] cursor-pointer m-0'>
                   <AiOutlineRight size={20} style={{ strokeWidth: '2', color: 'white' }} />
               </button>

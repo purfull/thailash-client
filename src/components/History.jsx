@@ -2,7 +2,7 @@
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import brand from '../assets/text/brand.png'
-import history1 from '../assets/history/history-1.jpg'
+import history1 from '../assets/history/history-1.png'
 import history2 from '../assets/history/history-2.jpg'
 import history3 from '../assets/history/history-3.jpg'
 
@@ -31,7 +31,7 @@ const History = () => {
         },
     ]
     return ( 
-        <div id="history" className="h-[100vh] mt-[10vh]">
+        <div id="history" className="h-[100vh] w-[85%] mt-[10vh]">
             
           <img src={brand} className='w-1/2 ml-[5vw]' alt="" />
 
