@@ -10,6 +10,7 @@ import 'owl.carousel/dist/assets/owl.theme.default.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Policy from "./components/Policy";
 import Terms from "./components/Terms";
+import Cancel from "./components/Cancel";
 
 
 function App() {
@@ -27,12 +28,13 @@ function App() {
             <History />
             <Faq />
         
-          <Footer width='85%' />
+          <Footer width={85} />
           </>
         } />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/privacy-policy" element={<Policy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/cancel" element={<Cancel />} />
       </Routes>
     </Router>
       

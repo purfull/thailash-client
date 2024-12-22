@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight } from 'react-icons/ai';
 import logo from '../assets/logo/logo.svg';
 import { Link } from 'react-scroll';
+import { Navigate } from 'react-router-dom';
 
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +27,9 @@ const NavBar = () => {
             }
         });
     };
+    const handleCheckoutClick = () => {
+        Navigate('/checkout');
+      };
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
@@ -33,7 +37,7 @@ const NavBar = () => {
     }, []);
 
     return (
-        <nav className="px-4 h-[14vh] flex items-center w-full fixed top-0 z-50 border-b border-[#046E3D40] bg-[#E9FFF3]">
+        <nav className="px-4 h-[8vh] md:h-[14vh] flex items-center w-full fixed top-0 z-50 border-b border-[#046E3D40] bg-[#E9FFF3] ">
             <div className="container mx-auto flex justify-between items-center text-[#056E3D]">
                 {/* Logo */}
                 <div className="text-[#056E3D] text-xl font-bold w-[26vw] md:w-[12vw]">
@@ -54,40 +58,41 @@ const NavBar = () => {
 
                 <ul className={`fixed top-0 right-0 h-full w-2/3 z-40 transform transition-transform rounded-[25px] border border-[#046E3D40] duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'} md:static md:flex md:flex-row md:items-center md:space-x-6 md:translate-x-0 md:w-auto px-4 font-bold`}>
                     <li>
-                        <Link 
-                            to="home" 
-                            smooth={true} 
-                            duration={500} 
+                        <a 
+                            href="/" 
+                            // smooth={true} 
+                            // duration={500}
+                            onClick={handleCheckoutClick('home')}
                             className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'home' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}>
                             Home
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link 
-                            to="reviews" 
-                            smooth={true} 
-                            duration={500} 
+                        <a 
+                            href="/#reviews" 
+                            // smooth={true} 
+                            // duration={500} 
                             className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'reviews' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}>
                             Reviews
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link 
-                            to="history" 
-                            smooth={true} 
-                            duration={500} 
+                        <a 
+                            href="/#history" 
+                            // smooth={true} 
+                            // duration={500} 
                             className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'history' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}>
                             History
-                        </Link>
+                        </a>
                     </li>
                     <li className="flex">
-                        <Link 
-                            to="contact" 
-                            smooth={true} 
-                            duration={500} 
+                        <a 
+                            href="/#contact" 
+                            // smooth={true} 
+                            // duration={500} 
                             className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'contact' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}>
                             Contact Us
-                        </Link>
+                        </a>
                     </li>
                 </ul>
 

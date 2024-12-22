@@ -110,7 +110,7 @@ const Checkout = () => {
             return (
               <div
                 key={item.id}
-                className="rounded-md border border-[#046E3D40] h-[8vw] w-[16vw]"
+                className="rounded-md border border-[#046E3D40] h-[8vw] md:w-[16vw]"
                 style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
               >
                 <Typography
@@ -328,7 +328,8 @@ const Checkout = () => {
                 }
                 label={
                     <span className='cursor-default '>
-                        I hereby acknowledge that I have read, understood, and agreed to the{" "}
+                    {/* hereby acknowledge that I have read, understood, and */}
+                        I agreed to the{" "}
                         <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: "#6200ed" }}>
                             Terms and Conditions
                         </a>{" "}
@@ -359,7 +360,7 @@ const Checkout = () => {
     </Box>
 
     
-    <Footer width='100%' />
+    <Footer width={100} />
     </>
   );
 };

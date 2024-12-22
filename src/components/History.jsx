@@ -1,4 +1,4 @@
-
+import React,  { useState, useEffect } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import brand from '../assets/text/brand.png'
@@ -30,10 +30,30 @@ const History = () => {
             image: history3 
         },
     ]
+    const [slidePercentage, setSlidePercentage] = useState(33.33);
+    
+        useEffect(() => {
+          const handleResize = () => {
+            if (window.innerWidth < 768) {
+              setSlidePercentage(90); // Mobile view
+            } else {
+              setSlidePercentage(70); // Larger devices
+            }
+          };
+      
+          // Set initial percentage
+          handleResize();
+      
+          // Add event listener for resize
+          window.addEventListener("resize", handleResize);
+      
+          // Clean up event listener
+          return () => window.removeEventListener("resize", handleResize);
+        }, []);
     return ( 
-        <div id="history" className="h-[100vh] w-[85%] mt-[10vh]">
+        <div id="history" className="h-[100vh] md:w-[85%] mt-[10vh]">
             
-          <img src={brand} className='w-1/2 ml-[5vw]' alt="" />
+          <img src={brand} className='w-[80%] md:w-1/2 ml-[5vw]' alt="" />
 
           <Carousel
                 showThumbs={false}
@@ -41,7 +61,7 @@ const History = () => {
                 autoFocus={false}
                 infiniteLoop
                 centerMode
-                centerSlidePercentage={70}
+                centerSlidePercentage={slidePercentage}
                 emulateTouch
                 swipeable
                 useKeyboardArrows

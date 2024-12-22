@@ -146,12 +146,12 @@ const Policy = () => {
             <p>For questions or concerns about this Privacy Policy, please contact us at:</p>
             <br />
             <ul className="policy-list">
-                <li>Address: 3/127, Plot No 144, Sirangudi Puliyur, Naapattinam - 611104 </li>
+                <li>Address: 3/127, Plot No 144, Sirangudi Puliyur, Nagapattinam - 611108 </li>
                 <li>Email: contact@thailash.com</li>
             </ul>
         </div>
         
-    <Footer width='100%' />
+    <Footer width={100} />
         </>
      );
 }

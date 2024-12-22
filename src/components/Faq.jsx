@@ -57,14 +57,14 @@ const Faq = () => {
     };
 
     return (
-        <div className="w-[85%]">
-        <div className="faq-section w-[80%]">
+        <div className="md:w-[85%]">
+        <div className="faq-section md:w-[80%]">
             <h2 className='text-center text-[#056E3D] font-bold'>FAQ</h2>
-            <img src={faq} className='w-[60%] mx-auto mb-[6vh]' alt="" />
+            <img src={faq} className=' md:w-[60%] mx-auto mb-[6vh]' alt="" />
             {faqData.map((item, index) => (
                 <div key={index} className="faq-item ">
                     <div className={`faq-question border-2 border-[#056E3D] text-[#056E3D] ${openIndex === index ? 'border-b-0' : ''} rounded-md `} onClick={() => toggleFaq(index)}>
-                        <span className='font-bold text-[24px] '>{item.question}</span>
+                        <span className='font-bold text-lg  '>{item.question}</span>
                         {openIndex === index ? (
                             <AiOutlineDown size={30} /> // Minus icon when expanded
                         ) : (

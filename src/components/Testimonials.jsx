@@ -1,4 +1,4 @@
-import React from 'react';
+import React,  { useState, useEffect } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import testimonial from '../assets/text/testimonial.png'
@@ -33,10 +33,30 @@ const Testimonials = () => {
             rating: 4, 
             image: "https://i.pinimg.com/236x/9b/93/62/9b9362e4b998a73745da74cdc3adb4a9.jpg" 
         },
-    ]
+    ] 
+     const [slidePercentage, setSlidePercentage] = useState(33.33);
+
+    useEffect(() => {
+      const handleResize = () => {
+        if (window.innerWidth < 768) {
+          setSlidePercentage(90); // Mobile view
+        } else {
+          setSlidePercentage(33.33); // Larger devices
+        }
+      };
+  
+      // Set initial percentage
+      handleResize();
+  
+      // Add event listener for resize
+      window.addEventListener("resize", handleResize);
+  
+      // Clean up event listener
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
-        <div id="reviews" className="h-[100vh] w-[85%] flex flex-col justify-center items-center">
+        <div id="reviews" className="md:h-[100vh] w-full md:w-[85%] flex flex-col justify-center items-center overflow-hidden">
             <div className="text-center text-[#056E3D]">
                 {/* <h1 className="text-4xl font-bold">Testimonials</h1> */}
                 <img src={testimonial} className="w-[65%] mx-auto" alt="" />
@@ -48,12 +68,13 @@ const Testimonials = () => {
                 showStatus={false}
                 infiniteLoop
                 centerMode
-                centerSlidePercentage={33.33}
+                centerSlidePercentage={slidePercentage}
                 emulateTouch
                 swipeable
                 useKeyboardArrows
     autoPlay // Enable auto-slide
     interval={2000} // Time in milliseconds (3000ms = 3 seconds)
+    className="w-full"
                 renderArrowPrev={(onClickHandler, hasPrev, label) =>
                     hasPrev && (
                         <button
@@ -93,7 +114,7 @@ const Testimonials = () => {
                 )}
             >
                 {data.map((item) => (
-                    <div key={item.id} className="testimonial-item h-[55vh] border border-[#056E3D] p-[4vh] flex flex-col items-center ">
+                    <div key={item.id} className="testimonial-item h-[44vh] md:h-[55vh] border border-[#056E3D] p-[4vh] flex flex-col items-center ">
                         <div className="flex items-center justify-start w-[80%] mb-4">
                             <img
                                 src={item.image}

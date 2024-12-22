@@ -47,9 +47,9 @@ const Home = () => {
     navigate('/checkout');
   };
     return ( 
-      <div id='home' className='w-[85%]' >
-        <div className='price-container h-[86vh] w-[15%] shadow-md border-l border-[#046E3D40]  fixed bottom-0 right-0 z-[200] bg-[#E9FFF3]'>
-          <p className='font-semibold text-lg p-2 mt-[5vh]'>FREE delivery Wed, 25 Dec on ₹499 of items fulfilled by Amazon.</p>
+      <div id='home' className='w-full sm:w-[85%]' >
+        <div className='price-container h-[86vh] w-[15%] shadow-md border-l border-[#046E3D40] hidden sm:block fixed bottom-0 right-0 z-[200] bg-[#E9FFF3] '>
+          <p className='font-semibold text-lg p-2 mt-[5vh]'>FREE delivery Wed, 25 Dec on ₹499 of items.</p>
           <p className=' text  p-2 '>Thailash Thennamarakudi Oil From Original Thennamarakudi Origin Ayurvedic Pain Relief Oil for Joint, Muscular Pain 100ML (pack of 2)</p>
           <p className=' font-semibold text-lg  px-2 mt-4 '>Now at <span className='text-red-600 '>{`-${17}%`}</span></p>
           <p className=' text  px-2 '><span className=' text mr-2' style={{textDecoration: 'line-through'}}>₹{300}</span><span className='text-2xl font-semibold'>₹{249}</span></p>  
@@ -60,17 +60,17 @@ const Home = () => {
 
         </div>
         
-        <div className="h-[100vh] flex items-end justify-evenly">
-          <div className="container-fluid w-[33%] p-0 pb-5 mb-6">
+        <div className="w-full sm:w-auto h-auto md:h-[100vh] flex flex-col sm:flex-row items-end justify-evenly mt-[10vh] md:mt-0">
+          <div className="container-fluid w-full sm:w-[33%] p-0 pb-5 mb-6">
             <Slider {...mainSettings}>
               {carouselItems.map((item, index) => (
                 <div key={index} className="position-relative ">
-                  <img className="w-[100%] h-[60vh] mx-auto " src={item.imgSrc} alt="" />
+                  <img className="w-[100%] md:h-[60vh] mx-auto " src={item.imgSrc} alt="" />
                 </div>
               ))}
             </Slider>
       
-            <div className="thumbnail-carousel w-[100%] mx-auto">
+            <div className="thumbnail-carousel w-[90%] mx-auto">
               <Slider {...thumbnailSettings}>
                 {carouselItems.map((item, index) => (
                   <div
@@ -87,17 +87,28 @@ const Home = () => {
               </Slider>
             </div>
           </div>
-          <div className="w-[55%] h-[70vh] pb-5 pl-[5vw]">
+          <div className="sm:w-[55%] h-auto md:h-[70vh] pb-5 pl-[5vw]">
             <img src={title} className='w-[90%]' alt="" />
             <p className='text-[#056E3D] w-[90%] font-semibold'>We offer a natural solution for sprains, muscle stiffness, back pain, neck pain, arthritis, rheumatism, ligament tears, frozen shoulder, blood clots, and swelling.
             Thailash Thennamarakudi Oil has been trusted by generations for complete bone and nerve-related issues
             </p>
-            <div className="mt-8 flex items-center">
-              <button className='mr-4 py-[7px] w-[10vw] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold'>More Info</button>
+            <div className="my-8 flex items-center">
+              <button className='mr-4 py-[7px] px-[4vw] md:px-[2vw] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold'>More Info</button>
+              
+              <button className=' py-[7px] px-[4vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47] md:hidden' onClick={handleCheckoutClick}>Buy Now</button>
               {/* <button className='mr-4 py-[7px] w-[10vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47]'>Buy Now</button> */}
-              <button to="/shop" className='p-[14px] rounded-full border-2 bg-[#056E3D] cursor-pointer m-0'>
+              <button to="/shop" className='p-[14px] rounded-full border-2 bg-[#056E3D] cursor-pointer m-0 ml-2'>
                   <AiOutlineRight size={20} style={{ strokeWidth: '2', color: 'white' }} />
               </button>
+            </div>
+            <div className="">
+              <span className='cursor-default text-[#056E3D] '>
+                    * your order can be canceled within 24 hours of purchase{" "}
+                    <a href="/cancel" target="_blank" rel="noopener noreferrer" style={{ color: "#6200ed" }}>
+                        click here
+                    </a>{" "}
+                    to cancel.
+                </span>
             </div>
           </div>
 
@@ -113,29 +124,28 @@ const Home = () => {
                   Original Thennamarakudi Oil Straight from the Nature
                 </h3>
               </div>
-              <div>
+              <div className='hidden sm:inline-block '>
                 <img src={tick} className="w-20" alt="Tick icon" />
               </div>
-              <div className="text-center p-2 bg-[#40916C] rounded-md">
+              <div className="text-center p-2 bg-[#40916C] rounded-md hidden sm:inline-block">
                 <h3 className="text-white font-semibold">
                   Original Thennamarakudi Oil Straight from the Nature
                 </h3>
               </div>
               <div>
-                <img src={tick} className="w-20" alt="Tick icon" />
+                <img src={tick} className="w-20 hidden sm:inline-block" alt="Tick icon" />
               </div>
-              {/* Repeat the items to create a smooth scroll */}
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-center h-[100vh]">
-          <div className=" w-[45%]">
+        <div className="flex flex-col-reverse  md:flex-row items-center justify-center h-[70vh] md:h-[100vh]">
+          <div className="w-[90%] sm:w-[45%]">
           <img src={tagline} alt="" />
             
-          <p className='text-[#056E3D] w-[85%] font-semibold mt-6'>The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The 
+          <p className='text-[#056E3D] md:w-[85%] font-semibold mt-6'>The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The 
             </p>
           </div>
-          <div className=" w-[45%] flex items-center justify-end">
+          <div className=" md:w-[45%] flex items-center justify-end">
             <img src={grandpa} className='w-[85%]' alt="" />
           </div>
         </div>
