@@ -97,12 +97,12 @@ const NavBar = () => {
                 </ul>
 
                 <div className=" justify-between items-center font-bold hidden md:flex">
-                    <Link to="/shop" className='mr-4 px-5 py-2 rounded-[25px] border-2 border-[#056E3D] cursor-pointer'>
+                    <a href="/checkout" className='mr-4 px-5 py-2 rounded-[25px] border-2 border-[#056E3D] cursor-pointer'>
                         Shop Now
-                    </Link>
-                    <Link to="/shop" className='p-3 rounded-full border-2 border-[#056E3D] cursor-pointer'>
+                    </a>
+                    <a href="/checkout" className='p-3 rounded-full border-2 border-[#056E3D] cursor-pointer'>
                         <AiOutlineRight size={20} style={{ strokeWidth: '2' }} />
-                    </Link>
+                    </a>
                 </div>
             </div>
         </nav>

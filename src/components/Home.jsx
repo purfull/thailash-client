@@ -46,6 +46,9 @@ const Home = () => {
   const handleCheckoutClick = () => {
     navigate('/checkout');
   };
+  const handleReadClick = () => {
+    window.scrollTo(0, 2000);
+  };
     return ( 
       <div id='home' className='w-full sm:w-[85%]' >
         <div className='price-container h-[86vh] w-[15%] shadow-md border-l border-[#046E3D40] hidden sm:block fixed bottom-0 right-0 z-[200] bg-[#E9FFF3] '>
@@ -93,11 +96,11 @@ const Home = () => {
             Thailash Thennamarakudi Oil has been trusted by generations for complete bone and nerve-related issues
             </p>
             <div className="my-8 flex items-center">
-              <button className='mr-4 py-[7px] px-[4vw] md:px-[2vw] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold'>More Info</button>
+              <button className='mr-4 py-[7px] px-[4vw] md:px-[2vw] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold' onClick={handleReadClick}>More Info</button>
               
               <button className=' py-[7px] px-[4vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47] md:hidden' onClick={handleCheckoutClick}>Buy Now</button>
               {/* <button className='mr-4 py-[7px] w-[10vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47]'>Buy Now</button> */}
-              <button to="/shop" className='p-[14px] rounded-full border-2 bg-[#056E3D] cursor-pointer m-0 ml-2'>
+              <button onClick={handleReadClick} className='p-[14px] rounded-full border-2 bg-[#056E3D] cursor-pointer m-0 ml-2'>
                   <AiOutlineRight size={20} style={{ strokeWidth: '2', color: 'white' }} />
               </button>
             </div>

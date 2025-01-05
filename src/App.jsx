@@ -11,6 +11,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Policy from "./components/Policy";
 import Terms from "./components/Terms";
 import Cancel from "./components/Cancel";
+import Refund from "./components/Refund";
+import Shipping from "./components/shipping";
 
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/privacy-policy" element={<Policy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/refund-policy" element={<Refund />} />
+        <Route path="/shipping-policy" element={<Shipping />} />
         <Route path="/cancel" element={<Cancel />} />
       </Routes>
     </Router>

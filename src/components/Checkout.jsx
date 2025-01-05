@@ -2,6 +2,7 @@ import { Box, Typography, TextField, Button, Grid, Divider, Select, MenuItem, Fo
 import { useEffect, useState } from 'react';
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import Footer from './Footer';
+import { load } from '@cashfreepayments/cashfree-js';
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -96,6 +97,83 @@ const Checkout = () => {
       }
     };
   }, [pincode]);
+
+  const initiatePayment = async () => {
+    try {
+        const orderId = `ORDER_${Date.now()}`;
+        const orderData = {
+            orderId,
+            orderAmount: 500,
+            customerEmail: 'customer@example.com',
+            customerPhone: '9876543210',
+            customerId: 'CUSTOMER_ID_123'
+        };
+
+        // Create the order via backend
+        const response = await fetch('http://localhost:3300/payment/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create order');
+        }
+
+        const { orderToken } = await response.json();
+
+        // Load Cashfree SDK
+        const cashfree = await load({
+            mode: 'sandbox', // or 'production' depending on your environment
+        });
+
+        const checkoutOptions = {
+            paymentSessionId: orderToken,  // Use orderToken from your backend
+            redirectTarget: '_modal', // Open payment page in a modal
+        };
+
+        // Trigger the checkout process
+        cashfree.checkout(checkoutOptions).then((result) => {
+            if (result.error) {
+                console.log('Payment failed or user closed the popup:', result.error);
+                alert('Payment failed');
+            } else if (result.redirect) {
+                console.log('Payment will be redirected after completion');
+            } else if (result.paymentDetails) {
+                console.log('Payment completed:', result.paymentDetails.paymentMessage);
+                alert('Payment successful!');
+            }
+        });
+
+    } catch (error) {
+        console.error('Error initiating payment:', error);
+        alert('Error initiating payment.');
+    }
+};
+
+useEffect(() => {
+    // Dynamically load the Cashfree SDK
+    const script = document.createElement('script');
+    script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';  // This can still be used to load the SDK
+    script.async = true;
+
+    script.onload = () => {
+        console.log('Cashfree SDK loaded');
+    };
+
+    script.onerror = () => {
+        console.error('Error loading Cashfree SDK');
+        alert('Error loading Cashfree SDK');
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+        document.body.removeChild(script);
+    };
+}, []);
 
   return (
     <>
@@ -348,7 +426,7 @@ const Checkout = () => {
       {/* Place Order Button */}
       <Box sx={{ textAlign: 'center' }}>
         <Button
-          onClick={handlePlaceOrder}
+          onClick={initiatePayment}
           variant="contained"
           style={{ backgroundColor: '#056E3D' }}
           size="large"
