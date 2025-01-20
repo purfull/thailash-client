@@ -36,7 +36,7 @@ const History = () => {
         useEffect(() => {
           const handleResize = () => {
             if (window.innerWidth < 768) {
-              setSlidePercentage(90); // Mobile view
+              setSlidePercentage(95); // Mobile view
             } else {
               setSlidePercentage(70); // Larger devices
             }
@@ -52,7 +52,7 @@ const History = () => {
           return () => window.removeEventListener("resize", handleResize);
         }, []);
     return ( 
-        <div id="history" className="h-[100vh] md:w-[85%] mt-[10vh]">
+        <div id="history" className="h-[80vh] md:w-[85%] mt-[10vh]">
             
           <img src={brand} className='w-[80%] md:w-1/2 ml-[5vw]' alt="" />
 
@@ -61,10 +61,10 @@ const History = () => {
                 showStatus={false}
                 autoFocus={false}
                 infiniteLoop
-                centerMode
+                centerMode={false}
                 centerSlidePercentage={slidePercentage}
                 emulateTouch
-                swipeable
+                swipeable = {false}
                 useKeyboardArrows
                 renderArrowPrev={(onClickHandler, hasPrev, label) =>
                     hasPrev && (
@@ -93,7 +93,7 @@ const History = () => {
                 renderIndicator={false}
             >
                 {data.map((item) => (
-                    <div key={item.id} className="testimonial-item h-[55vh]  flex flex-col items-center ">
+                    <div key={item.id} className="testimonial-item h-[45vh] w-[70%] ml-[15%] flex flex-col items-center justify-center ">
                         <div className="history-carousal">
                             <img
                                 src={item.image}
@@ -102,7 +102,7 @@ const History = () => {
                                 // className='w-full !sm:w-[100%] rounded-[10px] h-auto object-cover history-carousal-img'
                             />
                             <div className="history-para-container">
-                                <p className=" history-paragraph">{item.message}</p>
+                                <p className=" history-paragraph mx-auto text-[16px]">{item.message}</p>
                             </div>
                         </div>
                     </div>

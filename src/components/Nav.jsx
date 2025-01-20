@@ -46,7 +46,7 @@ const NavBar = () => {
     const DrawerList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={() => setIsOpen(false)} style={{ display: 'flex', flexDirection: "column" }}>
             {/* Burger menu icon for mobile */}
-            <div className="md:hidden text-[#056E3D] relative z-50" onClick={toggleMenu} style={{display:'flex',justifyContent:'end', height:'8vh',marginTop:"10px",marginRight:"14px",alignItems:'center',}}>
+            <div className="md:hidden text-[#056E3D] relative z-50" onClick={toggleMenu} style={{display:'flex',justifyContent:'end', height:'8vh',marginTop:"0px",marginRight:"14px",alignItems:'center',}}>
                 {isOpen && <AiOutlineClose size={24} />}
             </div>
             <a
@@ -100,7 +100,7 @@ const NavBar = () => {
                 >
                     <li>
                         <a
-                            href="#home"
+                            href={activeSection === 'home' ? "#home" : '/'}
                             onClick={() => setActiveSection('home')}
                             className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'home' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
                         >

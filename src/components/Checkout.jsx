@@ -149,13 +149,10 @@ const Checkout = () => {
 
   const initiatePayment = async (customerData) => {
     try {
-      // await createCustomer()
-      // const orderId = `ORDER_${Date.now()}`;
 
       const random4DigitNumber = (Math.floor(1000 + Math.random() * 9000)).toString().padStart(4, '0');
       const today = new Date();
       const formattedDate = today.toLocaleDateString('en-CA').replace(/-/g, '');
-      // console.log(formattedDate);
       console.log("random4DigitNumber", random4DigitNumber, formattedDate);
 
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`
@@ -168,11 +165,6 @@ const Checkout = () => {
         customerId: customerData?.id.toString()
       }
       const orderData = {
-        // orderId,
-        // orderAmount: formData?.quantity * singleProductData?.offer_price + 50,
-        // customerEmail: formData?.email,
-        // customerPhone: formData?.phone,
-        // customerId: 'CUSTOMER_ID_123'
         shipments: {
           add: formData?.address,
           address_type: "home",
@@ -180,22 +172,11 @@ const Checkout = () => {
           name: formData?.firstName + " " + formData?.lastName,
           pin: formData?.postalCode,
           order: orderId,
-          payment_mode: "Pre-paid",//Pre-paid or COD
+          payment_mode: "",//Pre-paid or COD
           country: "India",
           shipping_mode: "Surface",
-          // invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          // quantity: formData?.quantity,
-          // sku: singleProductData?.sku,
           city: formData?.city,
           state: customerData?.state,
-          // customerId: customerData?.id.toString(),
-          // invoiceAmount: formData?.quantity * singleProductData?.offer_price + 50,//total amount
-          // taxExclusiveGross: 130.00,
-          // totalTaxAmount: 20.75,
-          // buyerName: "John Doe",
-          // orderAmount: formData?.quantity * singleProductData?.offer_price + 50,
-          // total_product_cost: formData?.quantity * singleProductData?.offer_price,
-          // total_shipment_cost: 50
           cod_amount: formData?.quantity * singleProductData?.offer_price + 50,
 
         },
@@ -234,7 +215,7 @@ const Checkout = () => {
 
       // Load Cashfree SDK
       const cashfree = await load({
-        mode: 'sandbox', // or 'production' depending on your environment
+        mode: 'production', // or 'production' depending on your environment
       });
 
       const checkoutOptions = {
@@ -251,24 +232,45 @@ const Checkout = () => {
         } else if (result.redirect) {
           console.log('Payment will be redirected after completion');
         } else if (result.paymentDetails) {
-          console.log('Payment completed:', result.paymentDetails.paymentMessage);
-          // initiatePayment(initiatePaymentData)
+          console.log('Payment completed:', result.paymentDetails);
+          
+          // Determine the payment mode
+          const paymentMode = result.paymentDetails.paymentMode === 'COD' ? 'COD' : 'Pre-paid';
+      
+          console.log('Payment Mode:', paymentMode);
+      
+          // Update orderData with the payment mode
+          orderData.shipments.payment_mode = paymentMode;
+      
+          // Log orderData for verification
+          console.log('Final Order Data:', orderData);
+      
           alert('Payment successful!');
-
-          const response = fetch(`${AppEnv.baseUrl}/order/create-order`, {
+      
+          // Send order data to backend
+          fetch(`${AppEnv.baseUrl}/order/create-order`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(orderData),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to create order');
-          }
-
+          })
+            .then((orderResponse) => {
+              if (!orderResponse.ok) {
+                throw new Error('Failed to create order');
+              }
+              return orderResponse.json();
+            })
+            .then((orderResult) => {
+              console.log('Order created successfully:', orderResult);
+            })
+            .catch((orderError) => {
+              console.error('Error creating order:', orderError);
+              alert('Error creating order.');
+            });
         }
       });
+      
 
     } catch (error) {
       console.error('Error initiating payment:', error);
@@ -348,7 +350,7 @@ const Checkout = () => {
               return (
                 <div
                   key={item.id}
-                  className="rounded-md border border-[#046E3D40] h-[8vw] md:w-[16vw]"
+                  className="rounded-md border border-[#046E3D40] py-4 md:w-[16vw]"
                   style={{
                     display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: "center", border: "3px solid #046E3D40",
                     borderRadius: "10px"

@@ -2,40 +2,31 @@ import React,  { useState, useEffect } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import testimonial from '../assets/text/testimonial.png'
+import { AppEnv } from '../../config';
 
 const Testimonials = () => {
-    const data = [
-        { 
-            id: 1, 
-            name: "Sanjay", 
-            message: `Had muscle tear due to badminton and consulted few doctors. All advised to go for surgery.Luckily got to know abt this wonderful oil and started applying regularly with some recommended food items.To my surprise and shock, I m out of that muscle tear issue now. Can sense that at least 90% is recovered.  Luckily got to know abt this wonderful oil and started applying regularly with some recommended food items.`, 
-            rating: 5, 
-            image: "https://i.pinimg.com/236x/07/33/ba/0733ba760b29378474dea0fdbcb97107.jpg" 
-        },
-        { 
-            id: 2, 
-            name: "Harish", 
-            message: "Had muscle tear due to badminton and consulted few doctors. All advised to go for surgery.Luckily got to know abt this wonderful oil and started applying regularly with some recommended food items.To my surprise and shock, I m out of that muscle tear issue now. Can sense that at least 90% is recovered. ", 
-            rating: 4, 
-            image: "https://i.pinimg.com/236x/36/a2/e2/36a2e242bfe3ac039e0618fbaaef7596.jpg" 
-        },
-        { 
-            id: 3, 
-            name: "Satish", 
-            message: "Had muscle tear due to badminton and consulted few doctors. All advised to go for surgery.Luckily got to know abt this wonderful oil and started applying regularly with some recommended food items.To my surprise and shock, I m out of that muscle tear issue now. Can sense that at least 90% is recovered. ", 
-            rating: 3, 
-            image: "https://i.pinimg.com/564x/43/71/0f/43710f32c6fc09258dc246870064ace3.jpg" 
-        },
-        { 
-            id: 4, 
-            name: "Venkat", 
-            message: "Had muscle tear due to badminton and consulted few doctors. All advised to go for surgery.Luckily got to know abt this wonderful oil and started applying regularly with some recommended food items.To my surprise and shock, I m out of that muscle tear issue now. Can sense that at least 90% is recovered. ", 
-            rating: 4, 
-            image: "https://i.pinimg.com/236x/9b/93/62/9b9362e4b998a73745da74cdc3adb4a9.jpg" 
-        },
-    ] 
-     const [slidePercentage, setSlidePercentage] = useState(33.33);
+    const [data,setData] = useState([])
+    const [slidePercentage, setSlidePercentage] = useState(33.33);
 
+     
+     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`${AppEnv.baseUrl}/testimonial`);
+                const result = await response.json();
+                console.log(result , "Filtered Data");
+    
+                if (result) {
+    
+                  setData(result.data);
+    
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
+    }, []);
     useEffect(() => {
       const handleResize = () => {
         if (window.innerWidth < 768) {
@@ -70,7 +61,7 @@ const Testimonials = () => {
                 centerMode
                 centerSlidePercentage={slidePercentage}
                 emulateTouch
-                swipeable
+                swipeable = {false}
                 useKeyboardArrows
     autoPlay // Enable auto-slide
     interval={2000} // Time in milliseconds (3000ms = 3 seconds)
@@ -123,7 +114,7 @@ const Testimonials = () => {
                             />
                             <div className="text-left">
                                 <h4 className="text-lg font-bold">{item.name}</h4>
-                                <p className=" text-yellow-500 text-xl">{'★'.repeat(item.rating)}</p>
+                                <p className=" text-yellow-500 text-xl">{'★'.repeat(item.retting)}</p>
                             </div>
                         </div>
                         <p className="text-sm mt-2 text-left w-[90%]">{item.message}</p>

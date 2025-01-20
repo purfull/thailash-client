@@ -9,6 +9,7 @@ import product4 from '../assets/product/product-4.png'
 import product5 from '../assets/product/product-5.png'
 import grandpa from '../assets/logo/grandpa.png'
 import title from '../assets/text/home-title.png'
+import benefits from '../assets/icons/benefits.svg'
 import tagline from '../assets/text/tagline.png'
 import tick from '../assets/icons/verified-tick.svg'
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight } from 'react-icons/ai';
@@ -43,7 +44,7 @@ const Home = () => {
     arrows: false,
     afterChange: (index) => mainSliderRef.current.slickGoTo(index),
     centerMode: false, // Disable center mode for a stable view
-    infinite: false,
+    infinite: false, 
   };
 
   const getProductApi = async () => {
@@ -80,11 +81,11 @@ const Home = () => {
       </div>
 
       <div className="w-full sm:w-auto h-auto md:h-[100vh] flex flex-col sm:flex-row items-end justify-evenly mt-[10vh] md:mt-0">
-        <div className="container-fluid w-full sm:w-[33%] p-0 pb-5 mb-6">
+        <div className="container-fluid w-full sm:w-[35%] p-0 pb-5 mb-6">
           <Slider {...mainSettings}>
             {carouselItems.map((item, index) => (
               <div key={index} className="position-relative ">
-                <img className="w-[100%] md:h-[60vh] mx-auto " src={item.imgSrc} alt="" />
+                <img className="w-[90%] md:h-[60vh] mx-auto " src={item.imgSrc} alt="" />
               </div>
             ))}
           </Slider>
@@ -100,28 +101,29 @@ const Home = () => {
                     border: navIndex === index ? '2px solid #6200ed' : 'none', // Highlight active thumbnail
                   }}
                 >
-                  <img src={item.imgSrc} className="mx-auto" alt="" />
+                  <img src={item.imgSrc} className="mx-auto w-[90%]" alt="" />
                 </div>
               ))}
             </Slider>
           </div>
         </div>
-        <div className="sm:w-[55%] h-auto md:h-[70vh] pb-5 pl-[5vw]">
-          <img src={title} className='w-[90%]' alt="" />
-          <p className='text-[#056E3D] w-[90%] font-semibold'>We offer a natural solution for sprains, muscle stiffness, back pain, neck pain, arthritis, rheumatism, ligament tears, frozen shoulder, blood clots, and swelling.
+        <div className="sm:w-[55%] h-auto md:h-[70vh] pb-5 md:pl-[5vw] md:mb-[10vh]">
+          <img src={title} className='w-[90%] pl-[5vw] md:pl-0' alt="" />
+          <p className='text-[#056E3D] w-[90%] font-semibold pl-[5vw] md:pl-0'>We offer a natural solution for sprains, muscle stiffness, back pain, neck pain, arthritis, rheumatism, ligament tears, frozen shoulder, blood clots, and swelling.
             Thailash Thennamarakudi Oil has been trusted by generations for complete bone and nerve-related issues
           </p>
           <div className="my-8 flex items-center">
-            <button className='mr-4 py-[7px] px-[4vw] md:px-[2vw] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold' onClick={handleReadClick}>More Info</button>
-
-            <button className=' py-[7px] px-[4vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47] md:hidden' onClick={handleCheckoutClick}>Buy Now</button>
+            {/* <button className='mr-4 py-[7px] px-[4vw] md:px-[2vw] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold' onClick={handleReadClick}>More Info</button> */}
+            <img src={benefits} className='w-[100%] md:w-[90%]' alt="" />
+            
+            {/* <button className=' py-[7px] px-[4vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47] md:hidden' onClick={handleCheckoutClick}>Buy Now</button> */}
             {/* <button className='mr-4 py-[7px] w-[10vw] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47]'>Buy Now</button> */}
-            <button onClick={handleReadClick} className='p-[14px] rounded-full border-2 bg-[#056E3D] cursor-pointer m-0 ml-2'>
+            {/* <button onClick={handleReadClick} className='p-[14px] rounded-full border-2 bg-[#056E3D] cursor-pointer m-0 ml-2'>
               <AiOutlineRight size={20} style={{ strokeWidth: '2', color: 'white' }} />
-            </button>
+            </button> */}
           </div>
-          <div className="">
-            <span className='cursor-default text-[#056E3D] '>
+          <div className=" pl-[5vw] md:pl-0">
+            <span className='cursor-default text-[#056E3D]'>
               * your order can be canceled within 24 hours of purchase{" "}
               <a href="/cancel" target="_blank" rel="noopener noreferrer" style={{ color: "#6200ed" }}>
                 click here
@@ -140,7 +142,7 @@ const Home = () => {
             </div>
             <div className="text-center p-2 bg-[#40916C] rounded-md">
               <h3 className="text-white font-semibold text-[10px] sm:text-base md:text-lg">
-                Original Thennamarakudi Oil Straight from the Nature
+                Original Thennamarakudi Oil <br /> Straight from the Nature
               </h3>
             </div>
             <div className='hidden sm:inline-block '>
@@ -148,7 +150,7 @@ const Home = () => {
             </div>
             <div className="text-center p-2 bg-[#40916C] rounded-md hidden sm:inline-block text-[10px] sm:text-base md:text-lg">
               <h3 className="text-white font-semibold">
-                Original Thennamarakudi Oil Straight from the Nature
+                Original Thennamarakudi Oil <br /> Straight from the Nature
               </h3>
             </div>
             <div>
@@ -157,7 +159,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col-reverse  md:flex-row items-center justify-center h-[70vh] md:h-[100vh]">
+      <div className="flex flex-col-reverse  md:flex-row items-center justify-center h-[70vh] md:h-[80vh]">
         <div className="w-[90%] sm:w-[45%]">
           <img src={tagline} alt="" />
 
