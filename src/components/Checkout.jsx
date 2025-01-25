@@ -16,6 +16,8 @@ import Footer from "./Footer";
 import { load } from "@cashfreepayments/cashfree-js";
 import "./Checkout";
 import { AppEnv } from "../../config";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -43,11 +45,20 @@ const Checkout = () => {
   const [singleProductData, setSingleProductData] = useState(null);
   const [stateData, setStateData] = useState(null);
   const [initiatePaymentData, setInitiatePaymentData] = useState(null);
+  const [isSdkLoaded, setSdkLoaded] = useState(false);
+  const [snackBarState, setSnackBarState] = useState(false);
+
+  const { vertical, horizontal, open } = snackBarState;
+
   const data = [
     { id: 1, name: "200ml mini bottle", actualPrice: 400, offerPrice: 200 },
     { id: 2, name: "500ml Regular bottle", actualPrice: 1000, offerPrice: 500 },
     { id: 3, name: "1000ml mini bottle", actualPrice: 2000, offerPrice: 1000 },
   ];
+
+  const handleClose = () => {
+    setSnackBarState(false);
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -161,6 +172,10 @@ const Checkout = () => {
   };
 
   const initiatePayment = async (customerData) => {
+    if (!isSdkLoaded) {
+      alert("Cashfree SDK not loaded yet.");
+      return; // Exit if the SDK is not loaded
+    }
     try {
       const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
         .toString()
@@ -223,17 +238,21 @@ const Checkout = () => {
         throw new Error("Failed to create order");
       }
 
-      const { orderToken } = await response.json();
+      // const data = await response.json();
+      const data = await response.json();
 
+      console.log("data==>", data)
       // Load Cashfree SDK
       const cashfree = await load({
-        mode: "production", // or 'production' depending on your environment
+        // mode: "production", // or 'production' depending on your environment
+        mode: "test",
       });
 
       const checkoutOptions = {
-        paymentSessionId: orderToken, // Use orderToken from your backend
+        paymentSessionId: data?.orderToken, // Use orderToken from your backend
         redirectTarget: "_modal", // Open payment page in a modal
         // redirectTarget: '_self', // Open payment page in a modal
+        mode: "test"
       };
 
       // Trigger the checkout process
@@ -249,7 +268,7 @@ const Checkout = () => {
           // Determine the payment mode
           console.log("pppppaaaaa", result)
           const paymentMode =
-            result.paymentDetails.paymentMode === "COD" ? "COD" : "Pre-paid";
+            data?.order_meta?.payment_methods == "cc" ? "COD" : "Pre-paid";
 
           console.log("Payment Mode:", paymentMode);
 
@@ -259,7 +278,9 @@ const Checkout = () => {
           // Log orderData for verification
           console.log("Final Order Data:", orderData);
 
-          alert("Payment successful!");
+          // alert("Payment successful!");
+          setSnackBarState(true);
+
 
           // Send order data to backend
           fetch(`${AppEnv.baseUrl}/order/create-order`, {
@@ -290,6 +311,23 @@ const Checkout = () => {
     }
   };
 
+  const snackBar = () => {
+    return (
+      <Snackbar open={snackBarState} autoHideDuration={6000} onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        key={vertical + horizontal}>
+        <Alert
+          onClose={handleClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Payment Successful
+        </Alert>
+      </Snackbar>
+    )
+  }
+
   useEffect(() => {
     // Dynamically load the Cashfree SDK
     const script = document.createElement("script");
@@ -298,6 +336,7 @@ const Checkout = () => {
 
     script.onload = () => {
       console.log("Cashfree SDK loaded");
+      setSdkLoaded(true);
     };
 
     script.onerror = () => {
@@ -556,29 +595,29 @@ const Checkout = () => {
         </Typography>
         <Box component="form" sx={{ mb: 4 }}>
           <Grid container spacing={2}>
-          <Grid item xs={6}>
-  <Select
-    labelId="product-variant-label"
-    id="product-variant"
-    name="productVariant"
-    fullWidth
-    value={formData.productVariant}
-    onChange={handleChange}
-    required
-    displayEmpty
-  >
-    {/* Default option */}
-    <MenuItem value="" disabled>
-      Select Product
-    </MenuItem>
-    {/* Dynamic options */}
-    {productData?.map((item) => (
-      <MenuItem value={item?.name} key={item?.id}>
-        {item?.name}
-      </MenuItem>
-    ))}
-  </Select>
-</Grid>
+            <Grid item xs={6}>
+              <Select
+                labelId="product-variant-label"
+                id="product-variant"
+                name="productVariant"
+                fullWidth
+                value={formData.productVariant}
+                onChange={handleChange}
+                required
+                displayEmpty
+              >
+                {/* Default option */}
+                <MenuItem value="" disabled>
+                  Select Product
+                </MenuItem>
+                {/* Dynamic options */}
+                {productData?.map((item) => (
+                  <MenuItem value={item?.name} key={item?.id}>
+                    {item?.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
 
             <Grid item xs={6}>
               <TextField
@@ -634,28 +673,28 @@ const Checkout = () => {
               />
             </Grid>
             <Grid item xs={6}>
-  <Select
-    labelId="product-variant-label"
-    id="state"
-    name="state"
-    fullWidth
-    value={formData.state}
-    onChange={handleChange}
-    required
-    displayEmpty
-  >
-    {/* Default option */}
-    <MenuItem value="" disabled>
-      Select State
-    </MenuItem>
-    {/* Dynamic options */}
-    {stateData?.map((item) => (
-      <MenuItem value={item?.state_name} key={item?.state_id}>
-        {item?.state_name}
-      </MenuItem>
-    ))}
-  </Select>
-</Grid>
+              <Select
+                labelId="product-variant-label"
+                id="state"
+                name="state"
+                fullWidth
+                value={formData.state}
+                onChange={handleChange}
+                required
+                displayEmpty
+              >
+                {/* Default option */}
+                <MenuItem value="" disabled>
+                  Select State
+                </MenuItem>
+                {/* Dynamic options */}
+                {stateData?.map((item) => (
+                  <MenuItem value={item?.state_name} key={item?.state_id}>
+                    {item?.state_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
 
 
             <Grid item xs={12} sm={6}>
@@ -836,7 +875,7 @@ const Checkout = () => {
           </span>
         </Grid>
       </Box>
-
+      {snackBar()}
       <Footer width={100} />
     </>
   );
