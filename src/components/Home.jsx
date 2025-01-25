@@ -136,25 +136,31 @@ const Home = () => {
       </div>
       <div className="overflow-hidden">
         <div className="infinite-scroll-container py-1 bg-[#056E3D] flex items-center animate-scroll">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center  mx-auto">
             <div>
-              <img src={tick} className="w-20" alt="Tick icon" />
+              <img src={tick} className="w-14 " alt="Tick icon" />
             </div>
             <div className="text-center p-2 bg-[#40916C] rounded-md">
-              <h3 className="text-white font-semibold text-[10px] sm:text-base md:text-lg">
-                Original Thennamarakudi Oil <br /> Straight from the Nature
+              <h3 className="text-white font-semibold text-[8px] sm:text-base md:text-lg">
+                Original Thennamarakudi Oil  Straight <br /> from the Nature
               </h3>
             </div>
             <div className='hidden sm:inline-block '>
-              <img src={tick} className="w-20" alt="Tick icon" />
+              <img src={tick} className="w-14 " alt="Tick icon" />
             </div>
-            <div className="text-center p-2 bg-[#40916C] rounded-md hidden sm:inline-block text-[10px] sm:text-base md:text-lg">
+            <div className="text-center p-2 bg-[#40916C] rounded-md hidden sm:inline-block text-[8px] sm:text-base md:text-lg">
               <h3 className="text-white font-semibold">
-                Original Thennamarakudi Oil <br /> Straight from the Nature
+                Original Thennamarakudi Oil  Straight <br /> from the Nature
               </h3>
             </div>
+           
             <div>
-              <img src={tick} className="w-20 hidden sm:inline-block" alt="Tick icon" />
+              <img src={tick} className="w-14  " alt="Tick icon " />
+            </div>
+            <div className="text-center p-2 bg-[#40916C] rounded-md ">
+              <h3 className="text-white font-semibold text-[8px] sm:text-base md:text-lg">
+                Original Thennamarakudi Oil  Straight <br /> from the Nature
+              </h3>
             </div>
           </div>
         </div>

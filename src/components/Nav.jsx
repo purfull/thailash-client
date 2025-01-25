@@ -71,7 +71,7 @@ const NavBar = () => {
             >{"Contact"}</a>
         </Box>
     );
-    console.log("isOpen==>", isOpen)
+    // console.log("isOpen==>", isOpen)
     return (
         <nav className="px-4 h-[8vh] md:h-[14vh] flex items-center w-full fixed top-0 z-50 border-b border-[#046E3D40] bg-[#E9FFF3] ">
             <div className="container mx-auto flex justify-between items-center text-[#056E3D]">

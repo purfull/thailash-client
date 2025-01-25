@@ -47,7 +47,7 @@ const Testimonials = () => {
     }, []);
 
     return (
-        <div id="reviews" className="md:h-[100vh] w-full md:w-[85%] flex flex-col justify-center items-center overflow-hidden">
+        <div id="reviews" className="w-full md:w-[85%] flex flex-col justify-center items-center overflow-hidden pb-[8vh]">
             <div className="text-center text-[#056E3D]">
                 {/* <h1 className="text-4xl font-bold">Testimonials</h1> */}
                 <img src={testimonial} className="w-[65%] mx-auto" alt="" />
@@ -58,7 +58,7 @@ const Testimonials = () => {
                 showThumbs={false}
                 showStatus={false}
                 infiniteLoop
-                centerMode
+                centerMode = {slidePercentage == 90 ? false : true}
                 centerSlidePercentage={slidePercentage}
                 emulateTouch
                 swipeable = {false}
@@ -105,7 +105,7 @@ const Testimonials = () => {
                 )}
             >
                 {data.map((item) => (
-                    <div key={item.id} className="testimonial-item h-[44vh] md:h-[55vh] border border-[#056E3D] p-[4vh] flex flex-col items-center ">
+                    <div key={item.id} className="testimonial-item h-[44vh] md:h-auto border border-[#056E3D] p-[4vh] flex flex-col items-center ">
                         <div className="flex items-center justify-start w-[80%] mb-4">
                             <img
                                 src={item.image}

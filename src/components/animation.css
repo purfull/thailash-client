@@ -1,0 +1,27 @@
+.scroll-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background-color: #000;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  
+  .scroll-content {
+    display: flex; /* This ensures the images are in a single row */
+    flex-wrap: nowrap; /* Prevent wrapping to the next line */
+    white-space: nowrap;
+    padding-left: 10px;
+  }
+  
+  .box {
+    margin-right: 20px; /* Space between items */
+  }
+  
+  .b-marque-a_content_media {
+    width: 300px; /* Fixed width for each image */
+    height: 200px; /* Fixed height for each image */
+    object-fit: cover; /* Make sure the image fits the box without distortion */
+    border-radius: 10px;
+  }
+  

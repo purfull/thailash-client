@@ -3,8 +3,8 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import brand from '../assets/text/brand.png'
 import history1 from '../assets/history/history-1.png'
-import history2 from '../assets/history/history-2.jpg'
-import history3 from '../assets/history/history-3.jpg'
+import history2 from '../assets/history/history-2.png'
+import history3 from '../assets/history/history-3.png'
 import "./History.css";
 
 const History = () => {
@@ -52,7 +52,7 @@ const History = () => {
           return () => window.removeEventListener("resize", handleResize);
         }, []);
     return ( 
-        <div id="history" className="h-[80vh] md:w-[85%] mt-[10vh]">
+        <div id="history" className=" md:w-[85%] sm:mt-[10vh]">
             
           <img src={brand} className='w-[80%] md:w-1/2 ml-[5vw]' alt="" />
 
@@ -93,7 +93,7 @@ const History = () => {
                 renderIndicator={false}
             >
                 {data.map((item) => (
-                    <div key={item.id} className="testimonial-item h-[45vh] w-[70%] ml-[15%] flex flex-col items-center justify-center ">
+                    <div key={item.id} className="testimonial-item h-[45vh] w-[90%] md:w-[70%] mx-auto md:ml-[15%] flex flex-col items-center justify-center"  >
                         <div className="history-carousal">
                             <img
                                 src={item.image}

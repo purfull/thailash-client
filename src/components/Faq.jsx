@@ -57,7 +57,7 @@ const Faq = () => {
     };
 
     return (
-        <div className="md:w-[85%]">
+        <div className="md:w-[85%] sm:mt-[10vh]">
         <div className="faq-section md:w-[80%]">
             <h2 className='text-center text-[#056E3D] font-bold'>FAQ</h2>
             <img src={faq} className=' md:w-[60%] mx-auto mb-[6vh]' alt="" />
