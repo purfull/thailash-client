@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight } from 'react-icons/ai';
 import logo from '../assets/logo/logo.svg';
+import thailashLogo from '../assets/logo/ThailashLogo.svg';
 import { Link } from 'react-scroll';
 import { Navigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -43,31 +44,40 @@ const NavBar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const handleNavigation = (nav) => {
+        // console.log("inside handleNavigation==>", nav, window.location.origin)
+        window.location.replace(window.location.origin + `#${nav}`)
+        // navigate(`#${nav}`,{ replace: true })
+        // setActiveSection(nav);
+        // setActiveSection(nav);
+
+    }
+
     const DrawerList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={() => setIsOpen(false)} style={{ display: 'flex', flexDirection: "column" }}>
             {/* Burger menu icon for mobile */}
-            <div className="md:hidden text-[#056E3D] relative z-50" onClick={toggleMenu} style={{display:'flex',justifyContent:'end', height:'8vh',marginTop:"0px",marginRight:"14px",alignItems:'center',}}>
+            <div className="md:hidden text-[#056E3D] relative z-50" onClick={toggleMenu} style={{ display: 'flex', justifyContent: 'end', height: '8vh', marginTop: "0px", marginRight: "14px", alignItems: 'center', }}>
                 {isOpen && <AiOutlineClose size={24} />}
             </div>
+            <a 
+                // to="#home"
+                onClick={() => handleNavigation('home')}
+                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection == 'home' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
+            >{"Home"}</a >
             <a
-                href="#home"
-                onClick={() => setActiveSection('home')}
-                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection === 'home' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
-            >{"Home"}</a>
-            <a
-                href="#reviews"
-                onClick={() => setActiveSection('reviews')}
-                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection === 'reviews' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
+                // to="#reviews"
+                onClick={() => handleNavigation('reviews')}
+                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection == 'reviews' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
             >{"Reviews"}</a>
             <a
-                href="#history"
-                onClick={() => setActiveSection('history')}
-                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection === 'history' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
+                // to="#history"
+                onClick={() => handleNavigation('history')}
+                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection == 'history' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
             >{"History"}</a>
             <a
-                href="#contact"
-                onClick={() => setActiveSection('contact')}
-                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection === 'contact' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
+                // to="#contact"
+                onClick={() => handleNavigation('contact')}
+                className={`py-2 my-1 px-6 border-b md:border-none ${activeSection == 'contact' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
             >{"Contact"}</a>
         </Box>
     );
@@ -77,7 +87,7 @@ const NavBar = () => {
             <div className="container mx-auto flex justify-between items-center text-[#056E3D]">
                 {/* Logo */}
                 <div className="text-[#056E3D] text-xl font-bold w-[26vw] md:w-[12vw]">
-                    <img src={logo} className='w-full' alt="" />
+                    <img src={thailashLogo} className='w-full' alt="" />
                 </div>
 
                 {/* Burger menu icon for mobile */}
@@ -100,36 +110,36 @@ const NavBar = () => {
                 >
                     <li>
                         <a
-                            href={activeSection === 'home' ? "#home" : '/'}
-                            onClick={() => setActiveSection('home')}
-                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'home' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
+                            // href={activeSection === 'home' ? "#home" : '/'}
+                            onClick={() => handleNavigation('home')}
+                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection == 'home' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
                         >
                             Home
                         </a>
                     </li>
                     <li>
                         <a
-                            href="#reviews"
-                            onClick={() => setActiveSection('reviews')}
-                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'reviews' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
+                            // href="#reviews"
+                            onClick={() => handleNavigation('reviews')}
+                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection == 'reviews' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
                         >
                             Reviews
                         </a>
                     </li>
                     <li>
                         <a
-                            href="#history"
-                            onClick={() => setActiveSection('history')}
-                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'history' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
+                            // href="#history"
+                            onClick={() => handleNavigation('history')}
+                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection == 'history' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
                         >
                             History
                         </a>
                     </li>
                     <li className="flex">
                         <a
-                            href="#contact"
-                            onClick={() => setActiveSection('contact')}
-                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection === 'contact' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer whitespace-nowrap`}
+                            // href="#contact"
+                            onClick={() => handleNavigation('contact')}
+                            className={`py-2 my-1 rounded-[25px] px-6 border-b md:border-none ${activeSection == 'contact' ? 'bg-[#056E3D] text-white' : 'bg-[#FFFFFF87] text-[#056E3D]'} cursor-pointer`}
                         >
                             Contact Us
                         </a>

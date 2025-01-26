@@ -66,6 +66,7 @@ const Home = () => {
   const handleReadClick = () => {
     window.scrollTo(0, 2000);
   };
+  
   return (
     <div id='home' className='w-full sm:w-[85%]' >
       <div className='price-container h-[86vh] w-[15%] shadow-md border-l border-[#046E3D40] hidden sm:block fixed bottom-0 right-0 z-[200] bg-[#E9FFF3] '>

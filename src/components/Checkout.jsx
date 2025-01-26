@@ -47,8 +47,9 @@ const Checkout = () => {
   const [initiatePaymentData, setInitiatePaymentData] = useState(null);
   const [isSdkLoaded, setSdkLoaded] = useState(false);
   const [snackBarState, setSnackBarState] = useState(false);
+  const [resultMessage, setResultMessage] = useState('');
 
-  const { vertical, horizontal, open } = snackBarState;
+  // const { vertical, horizontal, open } = snackBarState;
 
   const data = [
     { id: 1, name: "200ml mini bottle", actualPrice: 400, offerPrice: 200 },
@@ -58,6 +59,7 @@ const Checkout = () => {
 
   const handleClose = () => {
     setSnackBarState(false);
+    setResultMessage('');
   };
 
   const handleChange = (e) => {
@@ -280,6 +282,7 @@ const Checkout = () => {
 
           // alert("Payment successful!");
           setSnackBarState(true);
+          setResultMessage('Payment successful');
 
 
           // Send order data to backend
@@ -301,28 +304,34 @@ const Checkout = () => {
             })
             .catch((orderError) => {
               console.error("Error creating order:", orderError);
-              alert("Error creating order.");
+              // alert("Error creating order.");
+              setSnackBarState(true);
+              setResultMessage('Error creating order.');
             });
         }
       });
     } catch (error) {
       console.error("Error initiating payment:", error);
-      alert("Error initiating payment.");
+      // alert("Error initiating payment.");
+      setSnackBarState(true);
+      setResultMessage('Error initiating payment.');
     }
   };
 
   const snackBar = () => {
     return (
-      <Snackbar open={snackBarState} autoHideDuration={6000} onClose={handleClose}
+      <Snackbar open={snackBarState} autoHideDuration={1000} onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        key={vertical + horizontal}>
+        // key={vertical + horizontal}
+        >
         <Alert
           onClose={handleClose}
           severity="success"
           variant="filled"
           sx={{ width: '100%' }}
         >
-          Payment Successful
+          {/* Payment Successful */}
+          {resultMessage}
         </Alert>
       </Snackbar>
     )
