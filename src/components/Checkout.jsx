@@ -246,15 +246,15 @@ const Checkout = () => {
       console.log("data==>", data)
       // Load Cashfree SDK
       const cashfree = await load({
-        // mode: "production", // or 'production' depending on your environment
-        mode: "test",
+        mode: "production", // or 'production' depending on your environment
+        // mode: "test",
       });
 
       const checkoutOptions = {
         paymentSessionId: data?.orderToken, // Use orderToken from your backend
         redirectTarget: "_modal", // Open payment page in a modal
         // redirectTarget: '_self', // Open payment page in a modal
-        mode: "test"
+        mode: "production"
       };
 
       // Trigger the checkout process
@@ -269,6 +269,7 @@ const Checkout = () => {
 
           // Determine the payment mode
           console.log("pppppaaaaa", result)
+          console.log("data?.order_meta==>", data?.order_meta)
           const paymentMode =
             data?.order_meta?.payment_methods == "cc" ? "COD" : "Pre-paid";
 
@@ -322,8 +323,8 @@ const Checkout = () => {
     return (
       <Snackbar open={snackBarState} autoHideDuration={1000} onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        // key={vertical + horizontal}
-        >
+      // key={vertical + horizontal}
+      >
         <Alert
           onClose={handleClose}
           severity="success"
