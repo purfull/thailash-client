@@ -9,7 +9,7 @@ import product4 from '../assets/product/product-4.png'
 import product5 from '../assets/product/product-5.png'
 import grandpa from '../assets/logo/grandpa.png'
 import title from '../assets/text/home-title.png'
-import benefits from '../assets/icons/benefits.svg'
+import benefits from '../assets/icons/benefits.png'
 import tagline from '../assets/text/tagline.png'
 import tick from '../assets/icons/verified-tick.svg'
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight } from 'react-icons/ai';
@@ -125,7 +125,7 @@ const Home = () => {
           </div>
           <div className=" pl-[5vw] md:pl-0">
             <span className='cursor-default text-[#056E3D]'>
-              * your order can be canceled within 24 hours of purchase{" "}
+              * You can cancel your order on the same day of purchase.{" "}
               <a href="/cancel" target="_blank" rel="noopener noreferrer" style={{ color: "#6200ed" }}>
                 click here
               </a>{" "}
@@ -142,14 +142,14 @@ const Home = () => {
               <img src={tick} className="w-14 " alt="Tick icon" />
             </div>
             <div className="text-center p-2 bg-[#40916C] rounded-md">
-              <h3 className="text-white font-semibold text-[8px] sm:text-base md:text-lg">
+              <h3 className="text-white font-semibold text-[8px]  sm:text-base md:text-md">
                 Original Thennamarakudi Oil  Straight <br /> from the Nature
               </h3>
             </div>
             <div className='hidden sm:inline-block '>
               <img src={tick} className="w-14 " alt="Tick icon" />
             </div>
-            <div className="text-center p-2 bg-[#40916C] rounded-md hidden sm:inline-block text-[8px] sm:text-base md:text-lg">
+            <div className="text-center p-2 bg-[#40916C] rounded-md hidden sm:inline-block text-[8px]  sm:text-base md:text-md">
               <h3 className="text-white font-semibold">
                 Original Thennamarakudi Oil  Straight <br /> from the Nature
               </h3>
@@ -159,7 +159,7 @@ const Home = () => {
               <img src={tick} className="w-14  " alt="Tick icon " />
             </div>
             <div className="text-center p-2 bg-[#40916C] rounded-md ">
-              <h3 className="text-white font-semibold text-[8px] sm:text-base md:text-lg">
+              <h3 className="text-white font-semibold text-[8px]  sm:text-base md:text-md">
                 Original Thennamarakudi Oil  Straight <br /> from the Nature
               </h3>
             </div>
@@ -170,7 +170,7 @@ const Home = () => {
         <div className="w-[90%] sm:w-[45%]">
           <img src={tagline} alt="" />
 
-          <p className='text-[#056E3D] md:w-[85%] font-semibold mt-6'>The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The legacy of Thailash Original down through his ancestors, this ancient remedy remedy The
+          <p className='text-[#056E3D] md:w-[85%] font-semibold mt-6'>The legacy of Thailash Original has been passed down through generations, preserving an ancient remedy trusted by ancestors for its effectiveness. This time-honored solution continues to stand as a symbol of traditional wisdom, offering natural healing that resonates with modern wellness needs.
           </p>
         </div>
         <div className=" md:w-[45%] flex items-center justify-end">

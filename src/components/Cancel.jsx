@@ -17,6 +17,7 @@ const Cancel = () => {
 
   const [snackBarState, setSnackBarState] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
+  const [alertType, setAlertType] = useState()
   const handleClose = () => {
     setSnackBarState(false);
     setResultMessage('');
@@ -31,7 +32,15 @@ const Cancel = () => {
   };
 
   const createCancelOrder = async () => {
+    if(!formData.phone || !formData.waybill){
+
+    setSnackBarState(true);
+    setAlertType('error')
+    setResultMessage('Oops! Some fields are missing. Fill them out to continue.');
+    return
+    }
     try {
+
 
 
       console.log(formData, "eeeeeeeee");
@@ -46,34 +55,37 @@ const Cancel = () => {
       const result = await response.json();
       console.log("customerData", result);
 
-      if (result.message) {
+      if (result.success) {
         // alert('Order canceled successfully');
         // setInitiatePaymentData(result?.data);
         setSnackBarState(true);
+        setAlertType('success')
         setResultMessage('Order canceled successfully');
       }
       else {
         // alert('failed to cancel Order');
         setSnackBarState(true);
-        setResultMessage('Failed to cancel Order');
+        setAlertType('error')
+        setResultMessage('Failed to cancel order, Please try again or contact support.');
       }
     } catch (error) {
       console.error('Error creating customer:', error);
       // alert('Error creating customer.');
       setSnackBarState(true);
-      setResultMessage('Error creating customer.');
+      setAlertType('error')
+      setResultMessage('Error cancel Order, Please try again or contact support.');
     }
   }
 
   const snackBar = () => {
     return (
-      <Snackbar open={snackBarState} autoHideDuration={1000} onClose={handleClose}
+      <Snackbar open={snackBarState} autoHideDuration={3000} onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         // key={vertical + horizontal}
         >
         <Alert
           onClose={handleClose}
-          severity="success"
+          severity= {alertType}
           variant="filled"
           sx={{ width: '100%' }}
         >

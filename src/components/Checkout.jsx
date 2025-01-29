@@ -18,6 +18,7 @@ import "./Checkout";
 import { AppEnv } from "../../config";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { FaBullseye } from "react-icons/fa6";
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -29,9 +30,6 @@ const Checkout = () => {
     state: "",
     phone: "",
     email: "",
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
     productVariant: "",
     quantity: "",
     gstNumber: "", // Ensure GST number is included
@@ -40,13 +38,14 @@ const Checkout = () => {
   const [isGstChecked, setIsGstChecked] = useState(false);
   const [isTermsChecked, setIsTermsChecked] = useState(false);
   const [pincode, setPinCode] = useState("");
-  const [serviceable, setServiceable] = useState();
+  const [serviceable, setServiceable] = useState(null);
   const [productData, setProductData] = useState(null);
   const [singleProductData, setSingleProductData] = useState(null);
   const [stateData, setStateData] = useState(null);
   const [initiatePaymentData, setInitiatePaymentData] = useState(null);
   const [isSdkLoaded, setSdkLoaded] = useState(false);
   const [snackBarState, setSnackBarState] = useState(false);
+  const [alertType, setAlertType] = useState()
   const [resultMessage, setResultMessage] = useState('');
 
   // const { vertical, horizontal, open } = snackBarState;
@@ -98,6 +97,10 @@ const Checkout = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
+    if(pincode.length !== 6) {
+      setServiceable(false)
+      return
+    }
     if (pincode.length === 6) {
       fetch(`${AppEnv.baseUrl}/customer/check-serviceable/${pincode}`, {
         method: "GET",
@@ -133,7 +136,17 @@ const Checkout = () => {
     };
   }, [pincode]);
 
-  const createCustomer = async () => {
+  const createCustomer = async (order) => {
+    if(!formData.phone || !formData.state || !formData.address || !formData.productVariant || !formData.firstName || !formData.email || !formData.quantity) {
+    
+      Object.entries(formData).forEach(([key, value]) => {
+        console.log(`${key}: ${value || 'Missing'}`);
+      });
+    setSnackBarState(true);
+    setAlertType('error')
+    setResultMessage('Oops! Some fields are missing. Fill them out to continue.');
+    return
+    }
     try {
       let customerData = {
         first_name: formData?.firstName,
@@ -161,14 +174,20 @@ const Checkout = () => {
       const result = await response.json();
       console.log("customerData", result);
       if (result?.data?.id) {
-        await initiatePayment(result?.data)
+        await order ? initiateCod(result?.data) : initiatePayment(result?.data)
         // setInitiatePaymentData(result?.data);
       }
       else {
-        alert('Unable to create order')
+       
+    setSnackBarState(true);
+    setAlertType('error')
+    setResultMessage('Cannot process order at this time. Please try again later or contact support.');
       }
     } catch (error) {
       console.error("Error creating customer:", error);
+      setSnackBarState(true);
+      setAlertType('error')
+      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
       // alert('Error creating customer.');
     }
   };
@@ -190,7 +209,7 @@ const Checkout = () => {
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
       console.log(isUnion, "isUnion");
       const paymentData = {
-        orderAmount: formData?.quantity * singleProductData?.offer_price + 50,
+        orderAmount: (formData?.quantity * singleProductData?.offer_price ) * 0.9,
         customerEmail: formData?.email,
         customerPhone: formData?.phone,
         customerId: customerData?.id.toString(),
@@ -203,22 +222,22 @@ const Checkout = () => {
           name: formData?.firstName + " " + formData?.lastName,
           pin: formData?.postalCode,
           order: orderId,
-          payment_mode: "", //Pre-paid or COD
+          payment_mode: "Pre-paid", //Pre-paid or COD
           country: "India",
           shipping_mode: "Surface",
           city: formData?.city,
           state: customerData?.state,
-          cod_amount: formData?.quantity * singleProductData?.offer_price,
+          cod_amount:  (formData?.quantity * singleProductData?.offer_price ) * 0.9,
         },
         orderDetial: {
           state: customerData?.state,
-          isUnion: false,
+          isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount: formData?.quantity * singleProductData?.offer_price,
+          invoiceAmount:  (formData?.quantity * singleProductData?.offer_price ) * 0.9,
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost:
-            formData?.quantity * singleProductData?.offer_price,
+             (formData?.quantity * singleProductData?.offer_price ) * 0.9,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
@@ -237,6 +256,9 @@ const Checkout = () => {
       });
 
       if (!response.ok) {
+        setSnackBarState(true);
+        setAlertType('error')
+        setResultMessage('Cannot process order at this time. Please try again later or contact support.');
         throw new Error("Failed to create order");
       }
 
@@ -261,17 +283,21 @@ const Checkout = () => {
       cashfree.checkout(checkoutOptions).then((result) => {
         if (result.error) {
           console.log("Payment failed or user closed the popup:", result.error);
-          alert("Payment failed");
+          setSnackBarState(true);
+          setAlertType('error')
+          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+      
         } else if (result.redirect) {
           console.log("Payment will be redirected after completion");
+          setSnackBarState(true);
+          setAlertType('error')
+          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
         } else if (result.paymentDetails) {
           console.log("Payment completed:", result.paymentDetails);
 
           // Determine the payment mode
           console.log("pppppaaaaa", result)
           console.log("data?.order_meta==>", data?.order_meta)
-          const paymentMode =
-            data?.order_meta?.payment_methods == "cc" ? "COD" : "Pre-paid";
 
           console.log("Payment Mode:", paymentMode);
 
@@ -302,12 +328,17 @@ const Checkout = () => {
             })
             .then((orderResult) => {
               console.log("Order created successfully:", orderResult);
+              setSnackBarState(true);
+              setAlertType('success')
+              setResultMessage('Your order has been created successfully! 🎉');
             })
             .catch((orderError) => {
               console.error("Error creating order:", orderError);
               // alert("Error creating order.");
-              setSnackBarState(true);
-              setResultMessage('Error creating order.');
+              
+      setSnackBarState(true);
+      setAlertType('error')
+      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
             });
         }
       });
@@ -315,19 +346,109 @@ const Checkout = () => {
       console.error("Error initiating payment:", error);
       // alert("Error initiating payment.");
       setSnackBarState(true);
-      setResultMessage('Error initiating payment.');
+      setAlertType('error')
+      setResultMessage('Error initiating payment at this time. Please try again later or contact support.');
+      
     }
   };
 
+  const initiateCod = async (customerData) => {
+    try {
+      const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
+        .toString()
+        .padStart(4, "0");
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
+      console.log("random4DigitNumber", random4DigitNumber, formattedDate);
+  
+      const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
+      const isUnion = stateData?.find((item) => item?.name == formData?.state);
+      console.log(isUnion, "isUnion");
+  
+      const paymentData = {
+        orderAmount: formData?.quantity * singleProductData?.offer_price,
+        customerEmail: formData?.email,
+        customerPhone: formData?.phone,
+        customerId: customerData?.id.toString(),
+      };
+  
+      const orderData = {
+        shipments: {
+          add: formData?.address,
+          address_type: "home",
+          phone: customerData?.phone,
+          name: formData?.firstName + " " + formData?.lastName,
+          pin: formData?.postalCode,
+          order: orderId,
+          payment_mode: "COD", // Pre-paid or COD
+          country: "India",
+          shipping_mode: "Surface",
+          city: formData?.city,
+          state: customerData?.state,
+          cod_amount: formData?.quantity * singleProductData?.offer_price,
+        },
+        orderDetial: {
+          state: customerData?.state,
+          isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
+          quantity: formData?.quantity,
+          invoiceNumber: `${formattedDate}${random4DigitNumber}`,
+          invoiceAmount: formData?.quantity * singleProductData?.offer_price,
+          buyerName: customerData?.first_name + " " + customerData?.last_name,
+          total_product_cost:
+            formData?.quantity * singleProductData?.offer_price,
+          total_shipment_cost: "",
+          sku: singleProductData?.sku,
+          gst: customerData?.gst ? customerData?.gst : null,
+        },
+      };
+  
+      console.log("orderData==>", orderData);
+      
+      // Send order data to backend
+      fetch(`${AppEnv.baseUrl}/order/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((orderResponse) => {
+          if (!orderResponse.ok) {
+            throw new Error("Failed to create order");
+          }
+          return orderResponse.json();
+        })
+        .then((orderResult) => {
+          console.log("Order created successfully:", orderResult);
+          setSnackBarState(true);
+          setAlertType('success')
+          setResultMessage('Your order has been created successfully! 🎉');
+        })
+        .catch((orderError) => {
+          console.error("Error creating order:", orderError);
+          setSnackBarState(true);
+          setAlertType('error')
+          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+        });
+    } catch (error) {
+      console.error("Error initiating payment:", error);
+      
+      setSnackBarState(true);
+      setAlertType('error')
+      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+    }
+  };
+  
+
   const snackBar = () => {
     return (
-      <Snackbar open={snackBarState} autoHideDuration={1000} onClose={handleClose}
+      <Snackbar open={snackBarState} autoHideDuration={3000} onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       // key={vertical + horizontal}
       >
         <Alert
           onClose={handleClose}
-          severity="success"
+          severity={alertType}
           variant="filled"
           sx={{ width: '100%' }}
         >
@@ -849,18 +970,46 @@ const Checkout = () => {
         </Box>
 
         {/* Place Order Button */}
-        <Box sx={{ textAlign: "center" }}>
-          <Button
-            // onClick={initiatePayment}
-            onClick={createCustomer}
-            variant="contained"
-            style={{ backgroundColor: "#056E3D" }}
-            size="large"
-            sx={{ mb: 3 }}
-          >
-            Place Order
-          </Button>
-        </Box>
+        <Box sx={{ textAlign: "center", display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "center" }}>
+  <Button
+    // onClick={initiatePayment}
+    onClick={() => createCustomer(false)}
+    variant="contained"
+    style={{
+      backgroundColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray when disabled
+      color: serviceable ? "white" : "#FFFFFF", // White text when disabled
+    }}
+    size="large"
+    sx={{
+      mb: 3,
+      mr: { sm: 2 },
+      paddingY: { xs: "10px", sm: "6px" },
+    }}
+    disabled={serviceable ? false : true}
+  >
+    Pay Now
+  </Button>
+  <Button
+    // onClick={initiatePayment}
+    onClick={() => createCustomer(true)}
+    variant="outlined"
+    style={{
+      borderColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray border when disabled
+      color: serviceable ? "#056E3D" : "#D3D3D3", // Light gray text when disabled
+    }}
+    size="large"
+    sx={{
+      mb: 3,
+      mr: { sm: 2 },
+      paddingY: { xs: "10px", sm: "6px" },
+    }}
+    disabled={serviceable ? false : true}
+  >
+    Place COD
+  </Button>
+</Box>
+
+
         <Grid item xs={12} sm={12} className=" sm:text-center ">
           <span className="cursor-default text-sm">
             By placing an order, you agree to our{" "}

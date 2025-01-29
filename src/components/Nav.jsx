@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight } from 'react-icons/ai';
-import logo from '../assets/logo/logo.svg';
+// import logo from '../assets/logo/logo.svg';
 import thailashLogo from '../assets/logo/ThailashLogo.svg';
 import { Link } from 'react-scroll';
 import { Navigate } from 'react-router-dom';
@@ -86,7 +86,7 @@ const NavBar = () => {
         <nav className="px-4 h-[8vh] md:h-[14vh] flex items-center w-full fixed top-0 z-50 border-b border-[#046E3D40] bg-[#E9FFF3] ">
             <div className="container mx-auto flex justify-between items-center text-[#056E3D]">
                 {/* Logo */}
-                <div className="text-[#056E3D] text-xl font-bold w-[26vw] md:w-[12vw]">
+                <div className="text-[#056E3D] text-xl font-bold w-[22vw] md:w-[8vw]">
                     <img src={thailashLogo} className='w-full' alt="" />
                 </div>
 
