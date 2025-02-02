@@ -18,6 +18,7 @@ import "./Checkout";
 import { AppEnv } from "../../config";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import banner from '../assets/icons/banner.png'
 import { FaBullseye } from "react-icons/fa6";
 
 const Checkout = () => {
@@ -64,11 +65,9 @@ const Checkout = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    console.log("name", name, "value", value);
 
     if (name == "productVariant") {
       let findProductData = productData?.find((x) => x.name == value);
-      console.log("findProductData", findProductData);
       setSingleProductData(findProductData);
     }
     // Update the state for the corresponding field
@@ -91,7 +90,6 @@ const Checkout = () => {
   };
 
   const handlePlaceOrder = () => {
-    console.log("Order Details:", formData);
     // Add logic to process the order
     // Navigate to the order success page
   };
@@ -119,7 +117,6 @@ const Checkout = () => {
         })
         .then((data) => {
           if (!abortController.signal.aborted) {
-            console.log("Response data:", data);
             setServiceable(data.success);
           }
         })
@@ -140,9 +137,6 @@ const Checkout = () => {
   const createCustomer = async (order) => {
     if (!formData.phone || !formData.state || !formData.address || !formData.productVariant || !formData.firstName || !formData.email || !formData.quantity) {
 
-      Object.entries(formData).forEach(([key, value]) => {
-        console.log(`${key}: ${value || 'Missing'}`);
-      });
       setErrorMessage(true);
       // setSnackBarState(true);
       // setAlertType('error')
@@ -174,9 +168,8 @@ const Checkout = () => {
         }
       );
       const result = await response.json();
-      console.log("customerData", result);
       if (result?.data?.id) {
-        await order ? initiateCod(result?.data) : initiatePayment(result?.data)
+         order ? await initiateCod(result?.data) :  await initiatePayment(result?.data)
         // setInitiatePaymentData(result?.data);
       }
       else {
@@ -196,7 +189,7 @@ const Checkout = () => {
 
   const initiatePayment = async (customerData) => {
     if (!isSdkLoaded) {
-      alert("Cashfree SDK not loaded yet.");
+      // alert("Cashfree SDK not loaded yet.");
       return; // Exit if the SDK is not loaded
     }
     try {
@@ -205,11 +198,9 @@ const Checkout = () => {
         .padStart(4, "0");
       const today = new Date();
       const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
-      console.log("random4DigitNumber", random4DigitNumber, formattedDate);
 
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
-      console.log(isUnion, "isUnion");
       const paymentData = {
         orderAmount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
         customerEmail: formData?.email,
@@ -246,7 +237,6 @@ const Checkout = () => {
         },
       };
 
-      console.log("orderData==>", orderData);
       // Create the order via backend
       // order api
       const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
@@ -267,7 +257,6 @@ const Checkout = () => {
       // const data = await response.json();
       const data = await response.json();
 
-      console.log("data==>", data)
       // Load Cashfree SDK
       const cashfree = await load({
         mode: "production", // or 'production' depending on your environment
@@ -284,34 +273,29 @@ const Checkout = () => {
       // Trigger the checkout process
       cashfree.checkout(checkoutOptions).then((result) => {
         if (result.error) {
-          console.log("Payment failed or user closed the popup:", result.error);
           setSnackBarState(true);
           setAlertType('error')
           setResultMessage('Cannot process order at this time. Please try again later or contact support.');
 
         } else if (result.redirect) {
-          console.log("Payment will be redirected after completion");
           setSnackBarState(true);
           setAlertType('error')
           setResultMessage('Cannot process order at this time. Please try again later or contact support.');
         } else if (result.paymentDetails) {
-          console.log("Payment completed:", result.paymentDetails);
 
           // Determine the payment mode
-          console.log("pppppaaaaa", result)
-          console.log("data?.order_meta==>", data?.order_meta)
 
-          console.log("Payment Mode:", paymentMode);
+          // console.log("Payment Mode:", paymentMode);
 
           // Update orderData with the payment mode
-          orderData.shipments.payment_mode = paymentMode;
+          // orderData.shipments.payment_mode = paymentMode;
 
           // Log orderData for verification
-          console.log("Final Order Data:", orderData);
 
           // alert("Payment successful!");
           setSnackBarState(true);
-          setResultMessage('Payment successful');
+          setAlertType('success')
+          setResultMessage('Payment successful!!');
 
 
           // Send order data to backend
@@ -329,7 +313,6 @@ const Checkout = () => {
               return orderResponse.json();
             })
             .then((orderResult) => {
-              console.log("Order created successfully:", orderResult);
               setSnackBarState(true);
               setAlertType('success')
               setErrorMessage(false)
@@ -362,11 +345,9 @@ const Checkout = () => {
         .padStart(4, "0");
       const today = new Date();
       const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
-      console.log("random4DigitNumber", random4DigitNumber, formattedDate);
 
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
-      console.log(isUnion, "isUnion");
 
       const paymentData = {
         orderAmount: formData?.quantity * singleProductData?.offer_price,
@@ -405,7 +386,6 @@ const Checkout = () => {
         },
       };
 
-      console.log("orderData==>", orderData);
 
       // Send order data to backend
       fetch(`${AppEnv.baseUrl}/order/create-order`, {
@@ -422,7 +402,6 @@ const Checkout = () => {
           return orderResponse.json();
         })
         .then((orderResult) => {
-          console.log("Order created successfully:", orderResult);
           setSnackBarState(true);
           setAlertType('success')
           setResultMessage('Your order has been created successfully! 🎉');
@@ -469,7 +448,6 @@ const Checkout = () => {
     script.async = true;
 
     script.onload = () => {
-      console.log("Cashfree SDK loaded");
       setSdkLoaded(true);
     };
 
@@ -485,7 +463,6 @@ const Checkout = () => {
     };
   }, []);
 
-  console.log("productData", productData);
   const getProductApi = async () => {
     const response = await fetch(`${AppEnv.baseUrl}/admin/products`, {
       method: "GET",
@@ -515,7 +492,6 @@ const Checkout = () => {
   useEffect(() => {
     getProductApi();
     getStateAPi();
-    console.log(productData);
   }, []);
 
   return (
@@ -724,6 +700,8 @@ const Checkout = () => {
         </Box>
         <Divider sx={{ mb: 4, mt: 4 }} />
 
+        <img src={banner} alt="" />
+        <Divider sx={{ mb: 4, mt: 4 }} />
 
         <Typography variant="h6" gutterBottom>
           Product Information
@@ -761,6 +739,7 @@ const Checkout = () => {
                 label="Quantity"
                 variant="outlined"
                 name="quantity"
+                type="number"
                 value={formData.quantity}
                 onChange={handleChange}
                 required

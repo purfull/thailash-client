@@ -43,7 +43,6 @@ const Cancel = () => {
 
 
 
-      console.log(formData, "eeeeeeeee");
 
       const response = await fetch(`${AppEnv.baseUrl}/order/cancel-order`, {
         method: 'POST',
@@ -53,7 +52,6 @@ const Cancel = () => {
         body: JSON.stringify(formData),
       });
       const result = await response.json();
-      console.log("customerData", result);
 
       if (result.success) {
         // alert('Order canceled successfully');
@@ -125,7 +123,7 @@ const Cancel = () => {
           </Grid>
 
           <Typography variant="body1" textAlign='center' gutterBottom>
-            *Note: your order can be canceled within 24 hours of placing the order.
+            Note: You can cancel your order on the same day of purchase.
           </Typography>
           <Box sx={{ textAlign: 'center' }}>
             <Button
