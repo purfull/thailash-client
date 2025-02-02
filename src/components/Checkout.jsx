@@ -47,6 +47,7 @@ const Checkout = () => {
   const [snackBarState, setSnackBarState] = useState(false);
   const [alertType, setAlertType] = useState()
   const [resultMessage, setResultMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(false);
 
   // const { vertical, horizontal, open } = snackBarState;
 
@@ -97,7 +98,7 @@ const Checkout = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if(pincode.length !== 6) {
+    if (pincode.length !== 6) {
       setServiceable(false)
       return
     }
@@ -137,15 +138,16 @@ const Checkout = () => {
   }, [pincode]);
 
   const createCustomer = async (order) => {
-    if(!formData.phone || !formData.state || !formData.address || !formData.productVariant || !formData.firstName || !formData.email || !formData.quantity) {
-    
+    if (!formData.phone || !formData.state || !formData.address || !formData.productVariant || !formData.firstName || !formData.email || !formData.quantity) {
+
       Object.entries(formData).forEach(([key, value]) => {
         console.log(`${key}: ${value || 'Missing'}`);
       });
-    setSnackBarState(true);
-    setAlertType('error')
-    setResultMessage('Oops! Some fields are missing. Fill them out to continue.');
-    return
+      setErrorMessage(true);
+      // setSnackBarState(true);
+      // setAlertType('error')
+      // setResultMessage('Oops! Some fields are missing. Fill them out to continue.');
+      return
     }
     try {
       let customerData = {
@@ -178,10 +180,10 @@ const Checkout = () => {
         // setInitiatePaymentData(result?.data);
       }
       else {
-       
-    setSnackBarState(true);
-    setAlertType('error')
-    setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+
+        setSnackBarState(true);
+        setAlertType('error')
+        setResultMessage('Cannot process order at this time. Please try again later or contact support.');
       }
     } catch (error) {
       console.error("Error creating customer:", error);
@@ -209,7 +211,7 @@ const Checkout = () => {
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
       console.log(isUnion, "isUnion");
       const paymentData = {
-        orderAmount: (formData?.quantity * singleProductData?.offer_price ) * 0.9,
+        orderAmount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
         customerEmail: formData?.email,
         customerPhone: formData?.phone,
         customerId: customerData?.id.toString(),
@@ -227,17 +229,17 @@ const Checkout = () => {
           shipping_mode: "Surface",
           city: formData?.city,
           state: customerData?.state,
-          cod_amount:  (formData?.quantity * singleProductData?.offer_price ) * 0.9,
+          cod_amount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
         },
         orderDetial: {
           state: customerData?.state,
           isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount:  (formData?.quantity * singleProductData?.offer_price ) * 0.9,
+          invoiceAmount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost:
-             (formData?.quantity * singleProductData?.offer_price ) * 0.9,
+            (formData?.quantity * singleProductData?.offer_price) * 0.9,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
@@ -286,7 +288,7 @@ const Checkout = () => {
           setSnackBarState(true);
           setAlertType('error')
           setResultMessage('Cannot process order at this time. Please try again later or contact support.');
-      
+
         } else if (result.redirect) {
           console.log("Payment will be redirected after completion");
           setSnackBarState(true);
@@ -330,15 +332,16 @@ const Checkout = () => {
               console.log("Order created successfully:", orderResult);
               setSnackBarState(true);
               setAlertType('success')
+              setErrorMessage(false)
               setResultMessage('Your order has been created successfully! 🎉');
             })
             .catch((orderError) => {
               console.error("Error creating order:", orderError);
               // alert("Error creating order.");
-              
-      setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+
+              setSnackBarState(true);
+              setAlertType('error')
+              setResultMessage('Cannot process order at this time. Please try again later or contact support.');
             });
         }
       });
@@ -348,7 +351,7 @@ const Checkout = () => {
       setSnackBarState(true);
       setAlertType('error')
       setResultMessage('Error initiating payment at this time. Please try again later or contact support.');
-      
+
     }
   };
 
@@ -360,18 +363,18 @@ const Checkout = () => {
       const today = new Date();
       const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
       console.log("random4DigitNumber", random4DigitNumber, formattedDate);
-  
+
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
       console.log(isUnion, "isUnion");
-  
+
       const paymentData = {
         orderAmount: formData?.quantity * singleProductData?.offer_price,
         customerEmail: formData?.email,
         customerPhone: formData?.phone,
         customerId: customerData?.id.toString(),
       };
-  
+
       const orderData = {
         shipments: {
           add: formData?.address,
@@ -401,9 +404,9 @@ const Checkout = () => {
           gst: customerData?.gst ? customerData?.gst : null,
         },
       };
-  
+
       console.log("orderData==>", orderData);
-      
+
       // Send order data to backend
       fetch(`${AppEnv.baseUrl}/order/create-order`, {
         method: "POST",
@@ -432,13 +435,13 @@ const Checkout = () => {
         });
     } catch (error) {
       console.error("Error initiating payment:", error);
-      
+
       setSnackBarState(true);
       setAlertType('error')
       setResultMessage('Cannot process order at this time. Please try again later or contact support.');
     }
   };
-  
+
 
   const snackBar = () => {
     return (
@@ -721,6 +724,7 @@ const Checkout = () => {
         </Box>
         <Divider sx={{ mb: 4, mt: 4 }} />
 
+
         <Typography variant="h6" gutterBottom>
           Product Information
         </Typography>
@@ -736,6 +740,7 @@ const Checkout = () => {
                 onChange={handleChange}
                 required
                 displayEmpty
+                error={errorMessage && !formData.productVariant}
               >
                 {/* Default option */}
                 <MenuItem value="" disabled>
@@ -759,9 +764,11 @@ const Checkout = () => {
                 value={formData.quantity}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.quantity}
               />
             </Grid>
           </Grid>
+          
         </Box>
 
         {/* Shipping Information */}
@@ -779,6 +786,7 @@ const Checkout = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.firstName}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -790,6 +798,7 @@ const Checkout = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.lastName}
               />
             </Grid>
             <Grid item xs={6}>
@@ -801,6 +810,7 @@ const Checkout = () => {
                 value={formData.address}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.lastName}
               />
             </Grid>
             <Grid item xs={6}>
@@ -813,6 +823,7 @@ const Checkout = () => {
                 onChange={handleChange}
                 required
                 displayEmpty
+                error={errorMessage && !formData.state}
               >
                 {/* Default option */}
                 <MenuItem value="" disabled>
@@ -837,6 +848,7 @@ const Checkout = () => {
                 value={formData.postalCode}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.postalCode}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -848,6 +860,7 @@ const Checkout = () => {
                 value={formData.city}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.city}
               />
             </Grid>
             <Grid container spacing={2} item xs={12} sm={12}>
@@ -891,6 +904,8 @@ const Checkout = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.phone}
+                helperText={errorMessage && formData.phone?.length != 10 ? "Phone number should be more than or equal to 10 digits " : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -902,6 +917,7 @@ const Checkout = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                error={errorMessage && !formData.email}
               />
             </Grid>
           </Grid>
@@ -939,6 +955,8 @@ const Checkout = () => {
                   value={formData.gstNumber}
                   onChange={handleChange}
                   required
+                  error={errorMessage && !formData.gstNumber}
+                  helperText={errorMessage && formData.gstNumber?.length !=  16 ? "GST number should be 16 character": ""}
                 />
               </Grid>
             )}
@@ -971,43 +989,43 @@ const Checkout = () => {
 
         {/* Place Order Button */}
         <Box sx={{ textAlign: "center", display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "center" }}>
-  <Button
-    // onClick={initiatePayment}
-    onClick={() => createCustomer(false)}
-    variant="contained"
-    style={{
-      backgroundColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray when disabled
-      color: serviceable ? "white" : "#FFFFFF", // White text when disabled
-    }}
-    size="large"
-    sx={{
-      mb: 3,
-      mr: { sm: 2 },
-      paddingY: { xs: "10px", sm: "6px" },
-    }}
-    disabled={serviceable ? false : true}
-  >
-    Pay Now
-  </Button>
-  <Button
-    // onClick={initiatePayment}
-    onClick={() => createCustomer(true)}
-    variant="outlined"
-    style={{
-      borderColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray border when disabled
-      color: serviceable ? "#056E3D" : "#D3D3D3", // Light gray text when disabled
-    }}
-    size="large"
-    sx={{
-      mb: 3,
-      mr: { sm: 2 },
-      paddingY: { xs: "10px", sm: "6px" },
-    }}
-    disabled={serviceable ? false : true}
-  >
-    Place COD
-  </Button>
-</Box>
+          <Button
+            // onClick={initiatePayment}
+            onClick={() => createCustomer(false)}
+            variant="contained"
+            style={{
+              backgroundColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray when disabled
+              color: serviceable ? "white" : "#FFFFFF", // White text when disabled
+            }}
+            size="large"
+            sx={{
+              mb: 3,
+              mr: { sm: 2 },
+              paddingY: { xs: "10px", sm: "6px" },
+            }}
+            disabled={serviceable ? false : true}
+          >
+            Pay Now
+          </Button>
+          <Button
+            // onClick={initiatePayment}
+            onClick={() => createCustomer(true)}
+            variant="outlined"
+            style={{
+              borderColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray border when disabled
+              color: serviceable ? "#056E3D" : "#D3D3D3", // Light gray text when disabled
+            }}
+            size="large"
+            sx={{
+              mb: 3,
+              mr: { sm: 2 },
+              paddingY: { xs: "10px", sm: "6px" },
+            }}
+            disabled={serviceable ? false : true}
+          >
+            Place COD
+          </Button>
+        </Box>
 
 
         <Grid item xs={12} sm={12} className=" sm:text-center ">
