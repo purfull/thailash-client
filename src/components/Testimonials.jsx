@@ -14,7 +14,6 @@ const Testimonials = () => {
             try {
                 const response = await fetch(`${AppEnv.baseUrl}/testimonial`);
                 const result = await response.json();
-                console.log(result , "Filtered Data");
     
                 if (result) {
     
