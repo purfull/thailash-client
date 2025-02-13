@@ -62,6 +62,7 @@ const Home = () => {
 
   const handleCheckoutClick = () => {
     navigate('/checkout');
+    window.scrollTo(0, 0); 
   };
   const handleReadClick = () => {
     window.scrollTo(0, 2000);

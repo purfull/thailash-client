@@ -16,7 +16,7 @@ const Footer = (width) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {/* Address, Phone, Email Section */}
                 <div>
-  <h3 className="text-xl font-bold mb-6 pb-2">Contact Us</h3>
+  <h3 className="text-xl font-bold md:mb-6 pb-2">Contact Us</h3>
   <p className="mb-3 flex items-start">
     <FaMapMarkerAlt size={16} className="mr-2 mt-1 text-[#056E3D] " />
     THAILASH ORIGINAL THENNAMARAKDI OIL, <br />
@@ -35,7 +35,7 @@ const Footer = (width) => {
                 {/* Quick Links Section */}
                 <div className="flex md:justify-center">
                     <div className="w-fit">
-                    <h3 className="text-xl font-bold mb-6 pb-2">Quick Links</h3>
+                    <h3 className="text-xl font-bold md:mb-6 pb-2">Quick Links</h3>
                     <ul className="space-y-3">
                         <li><a href="#about" className="hover:underline  transition" onClick={handleHomeClick}><AiOutlineRight size={14} style={{ strokeWidth: '2',verticalAlign: 'middle', display: 'inline-block' }} />Home</a></li>
                         <li><a href="#services" className="hover:underline  transition" onClick={handleReviewClick}><AiOutlineRight size={14} style={{ strokeWidth: '2',verticalAlign: 'middle', display: 'inline-block' }} />Review</a></li>
@@ -47,7 +47,7 @@ const Footer = (width) => {
                 {/* Privacy Policy and Terms Section */}
                 <div className="flex md:justify-center">
                     <div className="w-fit">
-                        <h3 className="text-xl font-bold mb-6 pb-2">Legal</h3>
+                        <h3 className="text-xl font-bold md:mb-6 pb-2">Legal</h3>
                         <ul className="space-y-3">
                             <li><a href="privacy-policy" className="hover:underline  transition"><AiOutlineRight size={14} style={{ strokeWidth: '2',verticalAlign: 'middle', display: 'inline-block' }} />Privacy Policy</a></li>
                             <li><a href="terms" className="hover:underline  transition"><AiOutlineRight size={14} style={{ strokeWidth: '2',verticalAlign: 'middle', display: 'inline-block' }} />Terms & Conditions</a></li>

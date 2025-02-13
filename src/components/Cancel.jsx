@@ -1,8 +1,8 @@
-import { Box, Typography, TextField, Button, Grid, Divider, Select, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Divider, Select, MenuItem, FormControlLabel, Checkbox, CircularProgress } from '@mui/material';
 import { AppEnv } from '../../config';
 
 import Footer from "./Footer";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
@@ -17,6 +17,7 @@ const Cancel = () => {
 
   const [snackBarState, setSnackBarState] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const [alertType, setAlertType] = useState()
   const handleClose = () => {
     setSnackBarState(false);
@@ -31,6 +32,10 @@ const Cancel = () => {
     }));
   };
 
+  useEffect(() => {
+    
+    window.scrollTo(0, 0); 
+  },[])
   const createCancelOrder = async () => {
     if(!formData.phone || !formData.waybill){
 
@@ -43,7 +48,7 @@ const Cancel = () => {
 
 
 
-
+      setLoading(true)
       const response = await fetch(`${AppEnv.baseUrl}/order/cancel-order`, {
         method: 'POST',
         headers: {
@@ -56,6 +61,7 @@ const Cancel = () => {
       if (result.success) {
         // alert('Order canceled successfully');
         // setInitiatePaymentData(result?.data);
+      setLoading(false)
         setSnackBarState(true);
         setAlertType('success')
         setResultMessage('Order canceled successfully');
@@ -64,11 +70,13 @@ const Cancel = () => {
         // alert('failed to cancel Order');
         setSnackBarState(true);
         setAlertType('error')
+        setLoading(false)
         setResultMessage('Failed to cancel order, Please try again or contact support.');
       }
     } catch (error) {
       console.error('Error creating customer:', error);
       // alert('Error creating customer.');
+      setLoading(false)
       setSnackBarState(true);
       setAlertType('error')
       setResultMessage('Error cancel Order, Please try again or contact support.');
@@ -132,8 +140,10 @@ const Cancel = () => {
               style={{ backgroundColor: '#056E3D' }}
               size="large"
               sx={{ mt: 3 }}
+              disabled={loading ? true : false}
             >
-              Cancel Order
+              
+            {loading ? <CircularProgress size={24} color={"#fff"} /> : "Cancel Order"}
             </Button>
           </Box>
 

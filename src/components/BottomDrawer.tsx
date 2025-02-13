@@ -14,6 +14,8 @@ const BottomDrawer = ({ getPorductData }) => {
 
     const handleCheckoutClick = () => {
         navigate('/checkout');
+        
+    window.scrollTo(0, 0); 
     };
 
     // {

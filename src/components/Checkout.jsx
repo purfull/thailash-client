@@ -19,6 +19,7 @@ import { AppEnv } from "../../config";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import banner from '../assets/icons/banner.png'
+import CircularProgress from '@mui/material/CircularProgress';
 import { FaBullseye } from "react-icons/fa6";
 
 const Checkout = () => {
@@ -49,7 +50,8 @@ const Checkout = () => {
   const [alertType, setAlertType] = useState()
   const [resultMessage, setResultMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [serviceLoading, setServieLoading] = useState(false);
   // const { vertical, horizontal, open } = snackBarState;
 
   const data = [
@@ -97,10 +99,12 @@ const Checkout = () => {
   useEffect(() => {
     const abortController = new AbortController();
     if (pincode.length !== 6) {
-      setServiceable(false)
+      setServiceable(null)
+      setServieLoading(false)
       return
     }
     if (pincode.length === 6) {
+      setServieLoading(true)
       fetch(`${AppEnv.baseUrl}/customer/check-serviceable/${pincode}`, {
         method: "GET",
         headers: {
@@ -123,6 +127,9 @@ const Checkout = () => {
         .catch((err) => {
           console.error("Fetch error:", err);
           setServiceable(false);
+        })
+        .finally(() => {
+          setServieLoading(false); 
         });
     }
 
@@ -143,6 +150,7 @@ const Checkout = () => {
       // setResultMessage('Oops! Some fields are missing. Fill them out to continue.');
       return
     }
+    setLoading(true)
     try {
       let customerData = {
         first_name: formData?.firstName,
@@ -231,6 +239,7 @@ const Checkout = () => {
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost:
             (formData?.quantity * singleProductData?.offer_price) * 0.9,
+          product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
@@ -316,6 +325,7 @@ const Checkout = () => {
               setSnackBarState(true);
               setAlertType('success')
               setErrorMessage(false)
+              setLoading(false)
               setResultMessage('Your order has been created successfully! 🎉');
             })
             .catch((orderError) => {
@@ -323,6 +333,7 @@ const Checkout = () => {
               // alert("Error creating order.");
 
               setSnackBarState(true);
+              setLoading(false)
               setAlertType('error')
               setResultMessage('Cannot process order at this time. Please try again later or contact support.');
             });
@@ -380,6 +391,7 @@ const Checkout = () => {
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost:
             formData?.quantity * singleProductData?.offer_price,
+          product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
@@ -402,18 +414,22 @@ const Checkout = () => {
           return orderResponse.json();
         })
         .then((orderResult) => {
+          
+    setServiceable(true)
           setSnackBarState(true);
           setAlertType('success')
+          setLoading(false)
           setResultMessage('Your order has been created successfully! 🎉');
         })
         .catch((orderError) => {
-          console.error("Error creating order:", orderError);
+          setLoading(false)
           setSnackBarState(true);
           setAlertType('error')
           setResultMessage('Cannot process order at this time. Please try again later or contact support.');
         });
     } catch (error) {
       console.error("Error initiating payment:", error);
+      setLoading(false)
 
       setSnackBarState(true);
       setAlertType('error')
@@ -824,10 +840,22 @@ const Checkout = () => {
                 label="Postal Code"
                 variant="outlined"
                 name="postalCode"
+                type="number"
                 value={formData.postalCode}
                 onChange={handleChange}
                 required
                 error={errorMessage && !formData.postalCode}
+                InputProps={{
+      inputProps: { style: { appearance: "textfield" } },
+    }}
+    sx={{
+      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+        display: "none",
+      },
+      "& input[type=number]": {
+        MozAppearance: "textfield",
+      },
+    }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -844,26 +872,28 @@ const Checkout = () => {
             </Grid>
             <Grid container spacing={2} item xs={12} sm={12}>
               {pincode.length === 6 && (
-                <Grid item xs={12} sm={12}>
-                  {serviceable ? (
-                    <Typography
-                      variant="body1"
-                      color="green"
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
-                      <CheckCircle sx={{ mr: 1 }} /> Serviceable Area
-                    </Typography>
-                  ) : (
-                    <Typography
-                      variant="body1"
-                      color="red"
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
-                      <Cancel sx={{ mr: 1 }} /> This area is not serviceable
-                    </Typography>
-                  )}
-                </Grid>
-              )}
+    <Grid item xs={12} sm={12}>
+      {serviceLoading ? (
+        <CircularProgress size={24} sx={{ color: "#056E3D" }} />
+      ) : serviceable ? (
+        <Typography
+          variant="body1"
+          color="green"
+          sx={{ display: "flex", alignItems: "center" }}
+        >
+          <CheckCircle sx={{ mr: 1 }} /> Serviceable Area
+        </Typography>
+      ) : (
+        <Typography
+          variant="body1"
+          color="red"
+          sx={{ display: "flex", alignItems: "center" }}
+        >
+          <Cancel sx={{ mr: 1 }} /> This area is not serviceable
+        </Typography>
+      )}
+    </Grid>
+  )}
             </Grid>
           </Grid>
         </Box>
@@ -881,10 +911,22 @@ const Checkout = () => {
                 variant="outlined"
                 name="phone"
                 value={formData.phone}
+                type="number"
                 onChange={handleChange}
                 required
+                InputProps={{
+      inputProps: { style: { appearance: "textfield" } },
+    }}
+    sx={{
+      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+        display: "none",
+      },
+      "& input[type=number]": {
+        MozAppearance: "textfield",
+      },
+    }}
                 error={errorMessage && !formData.phone}
-                helperText={errorMessage && formData.phone?.length != 10 ? "Phone number should be more than or equal to 10 digits " : ""}
+                helperText={errorMessage && formData.phone?.length != 10 ? "Phone number must be at least 10 digits " : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -982,7 +1024,7 @@ const Checkout = () => {
               mr: { sm: 2 },
               paddingY: { xs: "10px", sm: "6px" },
             }}
-            disabled={serviceable ? false : true}
+            disabled={serviceable && !loading ? false : true}
           >
             Pay Now
           </Button>
@@ -999,10 +1041,11 @@ const Checkout = () => {
               mb: 3,
               mr: { sm: 2 },
               paddingY: { xs: "10px", sm: "6px" },
+              minWidth: '8vw'
             }}
-            disabled={serviceable ? false : true}
+            disabled={serviceable && !loading ? false : true}
           >
-            Place COD
+            {loading ? <CircularProgress size={24} color={"#056E3D"} /> : "Pay COD"}
           </Button>
         </Box>
 
@@ -1038,3 +1081,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
