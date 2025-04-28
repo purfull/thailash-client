@@ -16,10 +16,10 @@ import Footer from "./Footer";
 import { load } from "@cashfreepayments/cashfree-js";
 import "./Checkout";
 import { AppEnv } from "../../config";
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import banner from '../assets/icons/banner.png'
-import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import banner from "../assets/icons/banner.png";
+import CircularProgress from "@mui/material/CircularProgress";
 import { FaBullseye } from "react-icons/fa6";
 
 const Checkout = () => {
@@ -47,8 +47,8 @@ const Checkout = () => {
   const [initiatePaymentData, setInitiatePaymentData] = useState(null);
   const [isSdkLoaded, setSdkLoaded] = useState(false);
   const [snackBarState, setSnackBarState] = useState(false);
-  const [alertType, setAlertType] = useState()
-  const [resultMessage, setResultMessage] = useState('');
+  const [alertType, setAlertType] = useState();
+  const [resultMessage, setResultMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serviceLoading, setServieLoading] = useState(false);
@@ -62,7 +62,7 @@ const Checkout = () => {
 
   const handleClose = () => {
     setSnackBarState(false);
-    setResultMessage('');
+    setResultMessage("");
   };
 
   const handleChange = (e) => {
@@ -99,12 +99,12 @@ const Checkout = () => {
   useEffect(() => {
     const abortController = new AbortController();
     if (pincode.length !== 6) {
-      setServiceable(null)
-      setServieLoading(false)
-      return
+      setServiceable(null);
+      setServieLoading(false);
+      return;
     }
     if (pincode.length === 6) {
-      setServieLoading(true)
+      setServieLoading(true);
       fetch(`${AppEnv.baseUrl}/customer/check-serviceable/${pincode}`, {
         method: "GET",
         headers: {
@@ -129,7 +129,7 @@ const Checkout = () => {
           setServiceable(false);
         })
         .finally(() => {
-          setServieLoading(false); 
+          setServieLoading(false);
         });
     }
 
@@ -142,15 +142,22 @@ const Checkout = () => {
   }, [pincode]);
 
   const createCustomer = async (order) => {
-    if (!formData.phone || !formData.state || !formData.address || !formData.productVariant || !formData.firstName || !formData.email || !formData.quantity) {
-
+    if (
+      !formData.phone ||
+      !formData.state ||
+      !formData.address ||
+      !formData.productVariant ||
+      !formData.firstName ||
+      !formData.email ||
+      !formData.quantity
+    ) {
       setErrorMessage(true);
       // setSnackBarState(true);
       // setAlertType('error')
       // setResultMessage('Oops! Some fields are missing. Fill them out to continue.');
-      return
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
       let customerData = {
         first_name: formData?.firstName,
@@ -178,20 +185,24 @@ const Checkout = () => {
       const result = await response.json();
       if (result?.data?.id) {
         const requestData = { ...customerData, id: result?.data?.id };
-        order ? await initiateCod(requestData) : await initiatePayment(requestData)
+        order
+          ? await initiateCod(requestData)
+          : await initiatePayment(requestData);
         // setInitiatePaymentData(result?.data);
-      }
-      else {
-
+      } else {
         setSnackBarState(true);
-        setAlertType('error')
-        setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+        setAlertType("error");
+        setResultMessage(
+          "Cannot process order at this time. Please try again later or contact support."
+        );
       }
     } catch (error) {
       console.error("Error creating customer:", error);
       setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+      setAlertType("error");
+      setResultMessage(
+        "Cannot process order at this time. Please try again later or contact support."
+      );
       // alert('Error creating customer.');
     }
   };
@@ -211,7 +222,7 @@ const Checkout = () => {
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
       const paymentData = {
-        orderAmount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
+        orderAmount: formData?.quantity * singleProductData?.offer_price * 0.9,
         customerEmail: formData?.email,
         customerPhone: formData?.phone,
         customerId: customerData?.id.toString(),
@@ -229,17 +240,19 @@ const Checkout = () => {
           shipping_mode: "Surface",
           city: formData?.city,
           state: customerData?.state,
-          cod_amount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
+          cod_amount: formData?.quantity * singleProductData?.offer_price * 0.9,
         },
         orderDetial: {
           state: customerData?.state,
-          isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
+          isUnion: stateData.find((el) => el.state_name == formData?.state)
+            ?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
+          invoiceAmount:
+            formData?.quantity * singleProductData?.offer_price * 0.9,
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost:
-            (formData?.quantity * singleProductData?.offer_price) * 0.9,
+            formData?.quantity * singleProductData?.offer_price * 0.9,
           product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
@@ -259,8 +272,10 @@ const Checkout = () => {
 
       if (!response.ok) {
         setSnackBarState(true);
-        setAlertType('error')
-        setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+        setAlertType("error");
+        setResultMessage(
+          "Cannot process order at this time. Please try again later or contact support."
+        );
         throw new Error("Failed to create order");
       }
 
@@ -277,22 +292,24 @@ const Checkout = () => {
         paymentSessionId: data?.orderToken, // Use orderToken from your backend
         redirectTarget: "_modal", // Open payment page in a modal
         // redirectTarget: '_self', // Open payment page in a modal
-        mode: "production"
+        mode: "production",
       };
 
       // Trigger the checkout process
       cashfree.checkout(checkoutOptions).then((result) => {
         if (result.error) {
           setSnackBarState(true);
-          setAlertType('error')
-          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
-
+          setAlertType("error");
+          setResultMessage(
+            "Cannot process order at this time. Please try again later or contact support."
+          );
         } else if (result.redirect) {
           setSnackBarState(true);
-          setAlertType('error')
-          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+          setAlertType("error");
+          setResultMessage(
+            "Cannot process order at this time. Please try again later or contact support."
+          );
         } else if (result.paymentDetails) {
-
           // Determine the payment mode
 
           // console.log("Payment Mode:", paymentMode);
@@ -304,9 +321,8 @@ const Checkout = () => {
 
           // alert("Payment successful!");
           setSnackBarState(true);
-          setAlertType('success')
-          setResultMessage('Payment successful!!');
-
+          setAlertType("success");
+          setResultMessage("Payment successful!!");
 
           // Send order data to backend
           fetch(`${AppEnv.baseUrl}/order/create-order`, {
@@ -324,19 +340,21 @@ const Checkout = () => {
             })
             .then((orderResult) => {
               setSnackBarState(true);
-              setAlertType('success')
-              setErrorMessage(false)
-              setLoading(false)
-              setResultMessage('Your order has been created successfully! 🎉');
+              setAlertType("success");
+              setErrorMessage(false);
+              setLoading(false);
+              setResultMessage("Your order has been created successfully! 🎉");
             })
             .catch((orderError) => {
               console.error("Error creating order:", orderError);
               // alert("Error creating order.");
 
               setSnackBarState(true);
-              setLoading(false)
-              setAlertType('error')
-              setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+              setLoading(false);
+              setAlertType("error");
+              setResultMessage(
+                "Cannot process order at this time. Please try again later or contact support."
+              );
             });
         }
       });
@@ -344,9 +362,10 @@ const Checkout = () => {
       console.error("Error initiating payment:", error);
       // alert("Error initiating payment.");
       setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Error initiating payment at this time. Please try again later or contact support.');
-
+      setAlertType("error");
+      setResultMessage(
+        "Error initiating payment at this time. Please try again later or contact support."
+      );
     }
   };
 
@@ -376,7 +395,7 @@ const Checkout = () => {
           name: formData?.firstName + " " + formData?.lastName,
           pin: formData?.postalCode,
           order: orderId,
-          payment_mode: "COD", // Pre-paid or COD
+          payment_mode: "COD",
           country: "India",
           shipping_mode: "Surface",
           city: formData?.city,
@@ -385,7 +404,8 @@ const Checkout = () => {
         },
         orderDetial: {
           state: customerData?.state,
-          isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
+          isUnion: stateData.find((el) => el.state_name == formData?.state)
+            ?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
           invoiceAmount: formData?.quantity * singleProductData?.offer_price,
@@ -398,7 +418,6 @@ const Checkout = () => {
           gst: customerData?.gst ? customerData?.gst : null,
         },
       };
-
 
       // Send order data to backend
       fetch(`${AppEnv.baseUrl}/order/create-order`, {
@@ -415,48 +434,53 @@ const Checkout = () => {
           return orderResponse.json();
         })
         .then((orderResult) => {
-          
-    setServiceable(true)
+          setServiceable(true);
           setSnackBarState(true);
-          setAlertType('success')
-          setLoading(false)
-          setResultMessage('Your order has been created successfully! 🎉');
+          setAlertType("success");
+          setLoading(false);
+          setResultMessage("Your order has been created successfully! 🎉");
         })
         .catch((orderError) => {
-          setLoading(false)
+          setLoading(false);
           setSnackBarState(true);
-          setAlertType('error')
-          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+          setAlertType("error");
+          setResultMessage(
+            "Cannot process order at this time. Please try again later or contact support."
+          );
         });
     } catch (error) {
       console.error("Error initiating payment:", error);
-      setLoading(false)
+      setLoading(false);
 
       setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+      setAlertType("error");
+      setResultMessage(
+        "Cannot process order at this time. Please try again later or contact support."
+      );
     }
   };
 
-
   const snackBar = () => {
     return (
-      <Snackbar open={snackBarState} autoHideDuration={3000} onClose={handleClose}
+      <Snackbar
+        open={snackBarState}
+        autoHideDuration={3000}
+        onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      // key={vertical + horizontal}
+        // key={vertical + horizontal}
       >
         <Alert
           onClose={handleClose}
           severity={alertType}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {/* Payment Successful */}
           {resultMessage}
         </Alert>
       </Snackbar>
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     // Dynamically load the Cashfree SDK
@@ -764,7 +788,6 @@ const Checkout = () => {
               />
             </Grid>
           </Grid>
-          
         </Box>
 
         {/* Shipping Information */}
@@ -834,7 +857,6 @@ const Checkout = () => {
               </Select>
             </Grid>
 
-
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -847,16 +869,17 @@ const Checkout = () => {
                 required
                 error={errorMessage && !formData.postalCode}
                 InputProps={{
-      inputProps: { style: { appearance: "textfield" } },
-    }}
-    sx={{
-      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-        display: "none",
-      },
-      "& input[type=number]": {
-        MozAppearance: "textfield",
-      },
-    }}
+                  inputProps: { style: { appearance: "textfield" } },
+                }}
+                sx={{
+                  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                    {
+                      display: "none",
+                    },
+                  "& input[type=number]": {
+                    MozAppearance: "textfield",
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -873,28 +896,28 @@ const Checkout = () => {
             </Grid>
             <Grid container spacing={2} item xs={12} sm={12}>
               {pincode.length === 6 && (
-    <Grid item xs={12} sm={12}>
-      {serviceLoading ? (
-        <CircularProgress size={24} sx={{ color: "#056E3D" }} />
-      ) : serviceable ? (
-        <Typography
-          variant="body1"
-          color="green"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <CheckCircle sx={{ mr: 1 }} /> Serviceable Area
-        </Typography>
-      ) : (
-        <Typography
-          variant="body1"
-          color="red"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <Cancel sx={{ mr: 1 }} /> This area is not serviceable
-        </Typography>
-      )}
-    </Grid>
-  )}
+                <Grid item xs={12} sm={12}>
+                  {serviceLoading ? (
+                    <CircularProgress size={24} sx={{ color: "#056E3D" }} />
+                  ) : serviceable ? (
+                    <Typography
+                      variant="body1"
+                      color="green"
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      <CheckCircle sx={{ mr: 1 }} /> Serviceable Area
+                    </Typography>
+                  ) : (
+                    <Typography
+                      variant="body1"
+                      color="red"
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      <Cancel sx={{ mr: 1 }} /> This area is not serviceable
+                    </Typography>
+                  )}
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Box>
@@ -916,18 +939,23 @@ const Checkout = () => {
                 onChange={handleChange}
                 required
                 InputProps={{
-      inputProps: { style: { appearance: "textfield" } },
-    }}
-    sx={{
-      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-        display: "none",
-      },
-      "& input[type=number]": {
-        MozAppearance: "textfield",
-      },
-    }}
+                  inputProps: { style: { appearance: "textfield" } },
+                }}
+                sx={{
+                  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                    {
+                      display: "none",
+                    },
+                  "& input[type=number]": {
+                    MozAppearance: "textfield",
+                  },
+                }}
                 error={errorMessage && !formData.phone}
-                helperText={errorMessage && formData.phone?.length != 10 ? "Phone number must be at least 10 digits " : ""}
+                helperText={
+                  errorMessage && formData.phone?.length != 10
+                    ? "Phone number must be at least 10 digits "
+                    : ""
+                }
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -978,7 +1006,11 @@ const Checkout = () => {
                   onChange={handleChange}
                   required
                   error={errorMessage && !formData.gstNumber}
-                  helperText={errorMessage && formData.gstNumber?.length !=  16 ? "GST number should be 16 character": ""}
+                  helperText={
+                    errorMessage && formData.gstNumber?.length != 16
+                      ? "GST number should be 16 character"
+                      : ""
+                  }
                 />
               </Grid>
             )}
@@ -990,6 +1022,7 @@ const Checkout = () => {
                     onChange={handleChange}
                     name="isTermsChecked"
                   />
+                  
                 }
                 label={
                   <span className='cursor-default '>
@@ -1010,7 +1043,14 @@ const Checkout = () => {
         </Box>
 
         {/* Place Order Button */}
-        <Box sx={{ textAlign: "center", display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "center" }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "center",
+          }}
+        >
           <Button
             // onClick={initiatePayment}
             onClick={() => createCustomer(false)}
@@ -1029,6 +1069,7 @@ const Checkout = () => {
           >
             Pay Now
           </Button>
+          <p>{resultMessage}</p>
           <Button
             // onClick={initiatePayment}
             onClick={() => createCustomer(true)}
@@ -1042,14 +1083,17 @@ const Checkout = () => {
               mb: 3,
               mr: { sm: 2 },
               paddingY: { xs: "10px", sm: "6px" },
-              minWidth: '8vw'
+              minWidth: "8vw",
             }}
             disabled={serviceable && !loading ? false : true}
           >
-            {loading ? <CircularProgress size={24} color={"#056E3D"} /> : "Pay COD"}
+            {loading ? (
+              <CircularProgress size={24} color={"#056E3D"} />
+            ) : (
+              "Pay COD"
+            )}
           </Button>
         </Box>
-
 
         <Grid item xs={12} sm={12} className=" sm:text-center ">
           <span className="cursor-default text-sm">
@@ -1082,4 +1126,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-
