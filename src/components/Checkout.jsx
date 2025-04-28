@@ -177,7 +177,8 @@ const Checkout = () => {
       );
       const result = await response.json();
       if (result?.data?.id) {
-         order ? await initiateCod(result?.data) :  await initiatePayment(result?.data)
+        const requestData = { ...customerData, id: result?.data?.id };
+        order ? await initiateCod(requestData) : await initiatePayment(requestData)
         // setInitiatePaymentData(result?.data);
       }
       else {
