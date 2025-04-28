@@ -13,6 +13,8 @@ import Terms from "./components/Terms";
 import Cancel from "./components/Cancel";
 import Refund from "./components/Refund";
 import Shipping from "./components/shipping";
+import SuccessPage from "./components/SuccessPage";
+import FailurePage from "./components/FailurePage";
 
 
 function App() {
@@ -33,12 +35,16 @@ function App() {
           <Footer width={85} />
           </>
         } />
+
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/privacy-policy" element={<Policy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/refund-policy" element={<Refund />} />
         <Route path="/shipping-policy" element={<Shipping />} />
         <Route path="/cancel" element={<Cancel />} />
+        <Route path="/success" element={<SuccessPage/>}></Route>\
+        <Route path="/failure" element={<FailurePage/>}></Route>
+
       </Routes>
     </Router>
       
