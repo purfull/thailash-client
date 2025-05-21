@@ -42,8 +42,8 @@ function App() {
         <Route path="/refund-policy" element={<Refund />} />
         <Route path="/shipping-policy" element={<Shipping />} />
         <Route path="/cancel" element={<Cancel />} />
-        <Route path="/success" element={<SuccessPage/>}></Route>\
-        <Route path="/failure" element={<FailurePage/>}></Route>
+        {/* <Route path="/success" element={<SuccessPage/>}></Route>
+        <Route path="/failure" element={<FailurePage/>}></Route> */}
 
       </Routes>
     </Router>

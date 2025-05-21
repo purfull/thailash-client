@@ -137,7 +137,7 @@ const Cancel = () => {
             <Button
               onClick={createCancelOrder}
               variant="contained"
-              style={{ backgroundColor: '#056E3D' }}
+              style={{ backgroundColor: '#056E3D', color: '#fff' }}
               size="large"
               sx={{ mt: 3 }}
               disabled={loading ? true : false}

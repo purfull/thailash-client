@@ -12,6 +12,7 @@ import title from '../assets/text/home-title.png'
 import benefits from '../assets/icons/benefits.png'
 import tagline from '../assets/text/tagline.png'
 import tick from '../assets/icons/verified-tick.svg'
+import gmp from '../assets/icons/gmp.png'
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight } from 'react-icons/ai';
 import { Link } from 'react-scroll';
 import { useNavigate } from 'react-router-dom';
@@ -108,6 +109,7 @@ const Home = () => {
               ))}
             </Slider>
           </div>
+          {/* <img src={gmp} alt="" className="absolute top-[20vh] w-24 right-[14%]" /> */}
         </div>
         <div className="sm:w-[55%] h-auto md:h-[70vh] pb-5 md:pl-[5vw] md:mb-[10vh]">
           <img src={title} className='w-[90%] pl-[5vw] md:pl-0' alt="" />

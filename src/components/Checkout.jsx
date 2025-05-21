@@ -21,6 +21,7 @@ import Alert from '@mui/material/Alert';
 import banner from '../assets/icons/banner.png'
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaBullseye } from "react-icons/fa6";
+import SuccessPage from "./SuccessPage";
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -52,6 +53,8 @@ const Checkout = () => {
   const [errorMessage, setErrorMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serviceLoading, setServieLoading] = useState(false);
+  const [wayBill, setWayBill] = useState('')
+  const [orderSuccess, setOrderSuccess] = useState(false)
   // const { vertical, horizontal, open } = snackBarState;
 
   const data = [
@@ -326,6 +329,103 @@ const Checkout = () => {
               setSnackBarState(true);
               setAlertType('success')
               setErrorMessage(false)
+              setOrderSuccess(true)
+              setWayBill(orderResult.data?.waybill)
+              // console.log(orderSuccess, wayBill);
+              
+
+            //   {
+            //     "message": "Shipment created successfully",
+            //     "data": {
+            //         "id": 77,
+            //         "address": "54",
+            //         "address_type": "home",
+            //         "phone": "9360389903",
+            //         "name": "s.n. sanjay",
+            //         "pin": "629002",
+            //         "order": "CUST_ORDER_202504295571",
+            //         "country": "India",
+            //         "shipping_mode": "Surface",
+            //         "invoiceNumber": "202504295571",
+            //         "invoiceDate": "2025-04-29",
+            //         "transactionType": "COD",
+            //         "orderId": "CUST_ORDER_202504295571",
+            //         "quantity": "1",
+            //         "sku": "100MLP3",
+            //         "city": "Nagercoil",
+            //         "state": "Tamil Nadu",
+            //         "invoiceAmount": 359,
+            //         "taxExclusiveGross": 320.54,
+            //         "totalTaxAmount": 38.46,
+            //         "buyerName": "s.n. sanjay",
+            //         "total_product_cost": 359,
+            //         "total_shipment_cost": "",
+            //         "waybill": "34202610002660",
+            //         "payment": "COD",
+            //         "remarks": "",
+            //         "status": "Success",
+            //         "cgstTax": 19.23,
+            //         "sgstTax": 19.23,
+            //         "igstTax": 0,
+            //         "utgstTax": 0,
+            //         "customerBillToGST": null,
+            //         "updatedAt": "2025-04-29T07:23:54.644Z",
+            //         "createdAt": "2025-04-29T07:23:54.644Z"
+            //     },
+            //     "payload": {
+            //         "shipments": [
+            //             {
+            //                 "add": "54",
+            //                 "address_type": "home",
+            //                 "phone": "9360389903",
+            //                 "name": "s.n. sanjay",
+            //                 "pin": "629002",
+            //                 "order": "CUST_ORDER_202504295571",
+            //                 "payment_mode": "COD",
+            //                 "country": "India",
+            //                 "shipping_mode": "Surface",
+            //                 "city": "Nagercoil",
+            //                 "state": "Tamil Nadu",
+            //                 "cod_amount": 359
+            //             }
+            //         ],
+            //         "pickup_location": {
+            //             "name": "Thailash Original Thennamarakudi Oil",
+            //             "city": "Nagapattinam",
+            //             "pin": "611108",
+            //             "country": "India",
+            //             "phone": "8310418179",
+            //             "add": "3/127, Madhura Nagar, Puliyur, Nagapattinam"
+            //         }
+            //     },
+            //     "parsedResponse": {
+            //         "cash_pickups_count": 0,
+            //         "package_count": 1,
+            //         "upload_wbn": "UPL9747981706829581518",
+            //         "replacement_count": 0,
+            //         "pickups_count": 0,
+            //         "packages": [
+            //             {
+            //                 "status": "Success",
+            //                 "client": "0423ba-THAILASHORIGINALTHEN-do",
+            //                 "sort_code": "TRN/KPH",
+            //                 "remarks": [
+            //                     ""
+            //                 ],
+            //                 "waybill": "34202610002660",
+            //                 "cod_amount": 359,
+            //                 "payment": "COD",
+            //                 "serviceable": true,
+            //                 "refnum": "CUST_ORDER_202504295571"
+            //             }
+            //         ],
+            //         "cash_pickups": 0,
+            //         "cod_count": 1,
+            //         "success": true,
+            //         "prepaid_count": 0,
+            //         "cod_amount": 359
+            //     }
+            // }
               setLoading(false)
               setResultMessage('Your order has been created successfully! 🎉');
             })
@@ -417,8 +517,11 @@ const Checkout = () => {
         .then((orderResult) => {
           
     setServiceable(true)
-          setSnackBarState(true);
+          // setSnackBarState(true);
           setAlertType('success')
+          setOrderSuccess(true)
+          setWayBill(orderResult.data?.waybill)
+          // console.log(orderSuccess, wayBill);
           setLoading(false)
           setResultMessage('Your order has been created successfully! 🎉');
         })
@@ -429,7 +532,7 @@ const Checkout = () => {
           setResultMessage('Cannot process order at this time. Please try again later or contact support.');
         });
     } catch (error) {
-      console.error("Error initiating payment:", error);
+      // console.error("Error initiating payment:", error);
       setLoading(false)
 
       setSnackBarState(true);
@@ -513,6 +616,7 @@ const Checkout = () => {
 
   return (
     <>
+      {orderSuccess ? <SuccessPage waybill={wayBill} /> :
       <Box sx={{ p: 4, maxWidth: "950px", margin: "auto" }}>
         {/* Order Summary */}
         <Box sx={{ mb: 2 }} className="hidden sm:block">
@@ -1074,7 +1178,7 @@ const Checkout = () => {
             .
           </span>
         </Grid>
-      </Box>
+      </Box>}
       {snackBar()}
       <Footer width={100} />
     </>
