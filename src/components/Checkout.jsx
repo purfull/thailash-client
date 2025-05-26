@@ -214,7 +214,7 @@ const Checkout = () => {
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
       const paymentData = {
-        orderAmount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
+        orderAmount: Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
         customerEmail: formData?.email,
         customerPhone: formData?.phone,
         customerId: customerData?.id.toString(),
@@ -232,17 +232,17 @@ const Checkout = () => {
           shipping_mode: "Surface",
           city: formData?.city,
           state: customerData?.state,
-          cod_amount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
+          cod_amount : Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
         },
         orderDetial: {
           state: customerData?.state,
           isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount: (formData?.quantity * singleProductData?.offer_price) * 0.9,
+          invoiceAmount: Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost:
-            (formData?.quantity * singleProductData?.offer_price) * 0.9,
+            Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
           product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
@@ -481,17 +481,17 @@ const Checkout = () => {
           shipping_mode: "Surface",
           city: formData?.city,
           state: customerData?.state,
-          cod_amount: formData?.quantity * singleProductData?.offer_price,
+          cod_amount: Math.floor(formData?.quantity * singleProductData?.offer_price),
         },
         orderDetial: {
           state: customerData?.state,
           isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount: formData?.quantity * singleProductData?.offer_price,
+          invoiceAmount: Math.floor(formData?.quantity * singleProductData?.offer_price),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost:
-            formData?.quantity * singleProductData?.offer_price,
+            Math.floor(formData?.quantity * singleProductData?.offer_price),
           product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
