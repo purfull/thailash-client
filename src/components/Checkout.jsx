@@ -22,8 +22,10 @@ import banner from '../assets/icons/banner.png'
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaBullseye } from "react-icons/fa6";
 import SuccessPage from "./SuccessPage";
+import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -330,6 +332,7 @@ const Checkout = () => {
               setAlertType('success')
               setErrorMessage(false)
               setOrderSuccess(true)
+              navigate('/success', { state: { waybill: orderResult.data?.waybill } });
               setWayBill(orderResult.data?.waybill)
               // console.log(orderSuccess, wayBill);
               
@@ -520,6 +523,7 @@ const Checkout = () => {
           // setSnackBarState(true);
           setAlertType('success')
           setOrderSuccess(true)
+              navigate('/success', { state: { waybill: orderResult.data?.waybill } });
           setWayBill(orderResult.data?.waybill)
           // console.log(orderSuccess, wayBill);
           setLoading(false)
@@ -616,7 +620,7 @@ const Checkout = () => {
 
   return (
     <>
-      {orderSuccess ? <SuccessPage waybill={wayBill} /> :
+      {/* {orderSuccess ? <SuccessPage waybill={wayBill} /> : */}
       <Box sx={{ p: 4, maxWidth: "950px", margin: "auto" }}>
         {/* Order Summary */}
         <Box sx={{ mb: 2 }} className="hidden sm:block">
@@ -1178,7 +1182,8 @@ const Checkout = () => {
             .
           </span>
         </Grid>
-      </Box>}
+      </Box>
+      {/* } */}
       {snackBar()}
       <Footer width={100} />
     </>
