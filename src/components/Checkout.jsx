@@ -332,7 +332,7 @@ const Checkout = () => {
               setAlertType('success')
               setErrorMessage(false)
               setOrderSuccess(true)
-              navigate('/success', { state: { waybill: orderResult.data?.waybill } });
+              navigate('/success', { state: { waybill: orderResult.data?.waybill, orderCost:  orderResult.data?.invoiceAmount } });
               setWayBill(orderResult.data?.waybill)
               // console.log(orderSuccess, wayBill);
               
@@ -523,7 +523,7 @@ const Checkout = () => {
           // setSnackBarState(true);
           setAlertType('success')
           setOrderSuccess(true)
-              navigate('/success', { state: { waybill: orderResult.data?.waybill } });
+              navigate('/success', { state: { waybill: orderResult.data?.waybill,orderCost:  orderResult.data?.invoiceAmount } });
           setWayBill(orderResult.data?.waybill)
           // console.log(orderSuccess, wayBill);
           setLoading(false)

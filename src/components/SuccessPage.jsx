@@ -11,9 +11,10 @@ const SuccessPage = () => {
     const navigate = useNavigate(); // Initialize the navigate function
     
   const waybill = location.state?.waybill;
+  const orderCost = location.state?.orderCost
 
   useEffect(() => {
-    if (!waybill) {
+    if (!waybill || !orderCost) {
       navigate('/');
     }
   }, [waybill, navigate]);
@@ -27,7 +28,8 @@ const SuccessPage = () => {
     <div className="success-page-container h-[70vh]">
       <img src={successimg} alt="check" className="success-image" />
       <h1 className="success-title">Your order has been created successfully! 🎉</h1>
-      <h3 className="text-lg font-semibold">Your AWB No: {waybill || ""}  </h3>
+      <h3 className="text-lg font-semibold">Total Cost: ₹<span>{orderCost || ""} </span> </h3>
+      <h3 className="text-lg font-semibold">AWB No: {waybill || ""}  </h3>
       <button
         onClick={handleContinueShopping}
         className="continue-shopping-btn"
