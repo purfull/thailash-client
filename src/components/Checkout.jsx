@@ -16,13 +16,13 @@ import Footer from "./Footer";
 import { load } from "@cashfreepayments/cashfree-js";
 import "./Checkout";
 import { AppEnv } from "../../config";
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import banner from '../assets/icons/banner.png'
-import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import banner from "../assets/icons/banner.png";
+import CircularProgress from "@mui/material/CircularProgress";
 import { FaBullseye } from "react-icons/fa6";
 import SuccessPage from "./SuccessPage";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -50,13 +50,14 @@ const Checkout = () => {
   const [initiatePaymentData, setInitiatePaymentData] = useState(null);
   const [isSdkLoaded, setSdkLoaded] = useState(false);
   const [snackBarState, setSnackBarState] = useState(false);
-  const [alertType, setAlertType] = useState()
-  const [resultMessage, setResultMessage] = useState('');
+  const [alertType, setAlertType] = useState();
+  const [resultMessage, setResultMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serviceLoading, setServieLoading] = useState(false);
-  const [wayBill, setWayBill] = useState('')
-  const [orderSuccess, setOrderSuccess] = useState(false)
+  const [orderResult, setOrderResult] = useState();
+  const [wayBill, setWayBill] = useState("");
+  const [orderSuccess, setOrderSuccess] = useState(false);
   // const { vertical, horizontal, open } = snackBarState;
 
   const data = [
@@ -67,7 +68,7 @@ const Checkout = () => {
 
   const handleClose = () => {
     setSnackBarState(false);
-    setResultMessage('');
+    setResultMessage("");
   };
 
   const handleChange = (e) => {
@@ -104,12 +105,12 @@ const Checkout = () => {
   useEffect(() => {
     const abortController = new AbortController();
     if (pincode.length !== 6) {
-      setServiceable(null)
-      setServieLoading(false)
-      return
+      setServiceable(null);
+      setServieLoading(false);
+      return;
     }
     if (pincode.length === 6) {
-      setServieLoading(true)
+      setServieLoading(true);
       fetch(`${AppEnv.baseUrl}/customer/check-serviceable/${pincode}`, {
         method: "GET",
         headers: {
@@ -134,7 +135,7 @@ const Checkout = () => {
           setServiceable(false);
         })
         .finally(() => {
-          setServieLoading(false); 
+          setServieLoading(false);
         });
     }
 
@@ -147,15 +148,23 @@ const Checkout = () => {
   }, [pincode]);
 
   const createCustomer = async (order) => {
-    if (!formData.phone || !formData.state || !formData.address || !formData.productVariant || !formData.firstName || !formData.email || !formData.quantity) {
-
+    if (
+      !formData.phone ||
+      !formData.state ||
+      !formData.address ||
+      !formData.firstName ||
+      (!formData.gstNumber.length == 0 || !formData.gstNumber.length == 16) ||
+      !formData.quantity
+    ) {
+      console.log(formData);
+      
       setErrorMessage(true);
-      // setSnackBarState(true);
-      // setAlertType('error')
-      // setResultMessage('Oops! Some fields are missing. Fill them out to continue.');
-      return
+      setSnackBarState(true);
+      setAlertType('error')
+      setResultMessage('Oops! Some fields are missing. Please fill them out to continue.');
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
       let customerData = {
         first_name: formData?.firstName,
@@ -183,20 +192,24 @@ const Checkout = () => {
       const result = await response.json();
       if (result?.data?.id) {
         const requestData = { ...customerData, id: result?.data?.id };
-        order ? await initiateCod(requestData) : await initiatePayment(requestData)
+        order
+          ? await initiateCod(requestData)
+          : await initiatePayment(requestData);
         // setInitiatePaymentData(result?.data);
-      }
-      else {
-
+      } else {
         setSnackBarState(true);
-        setAlertType('error')
-        setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+        setAlertType("error");
+        setResultMessage(
+          "Cannot process order at this time. Please try again later or contact support."
+        );
       }
     } catch (error) {
       console.error("Error creating customer:", error);
       setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+      setAlertType("error");
+      setResultMessage(
+        "Cannot process order at this time. Please try again later or contact support."
+      );
       // alert('Error creating customer.');
     }
   };
@@ -215,12 +228,7 @@ const Checkout = () => {
 
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
-      const paymentData = {
-        orderAmount: Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
-        customerEmail: formData?.email,
-        customerPhone: formData?.phone,
-        customerId: customerData?.id.toString(),
-      };
+   
       const orderData = {
         shipments: {
           add: formData?.address,
@@ -234,17 +242,23 @@ const Checkout = () => {
           shipping_mode: "Surface",
           city: formData?.city,
           state: customerData?.state,
-          cod_amount : Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
+          cod_amount: Math.floor(
+            (formData?.quantity * singleProductData?.offer_price * 0.9) + 30
+          ),
         },
         orderDetial: {
           state: customerData?.state,
-          isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
+          isUnion: stateData.find((el) => el.state_name == formData?.state)
+            ?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount: Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
+          invoiceAmount: Math.floor(
+            (formData?.quantity * singleProductData?.offer_price * 0.9) + 30
+          ),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
-          total_product_cost:
-            Math.floor((formData?.quantity * singleProductData?.offer_price) * 0.9),
+          total_product_cost: Math.floor(
+            (formData?.quantity * singleProductData?.offer_price * 0.9) + 30
+          ),
           product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
@@ -252,9 +266,20 @@ const Checkout = () => {
         },
       };
 
+         const paymentData = {
+        orderAmount: Math.floor(
+          formData?.quantity * singleProductData?.offer_price * 0.9
+        ),
+        customerEmail: formData?.email,
+        customerPhone: formData?.phone,
+        customerId: customerData?.id.toString(),
+        orderData
+      };
+
       // Create the order via backend
       // order api
-      const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
+      // const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
+      const response = await fetch(`http://localhost:3300/payment/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -264,17 +289,52 @@ const Checkout = () => {
 
       if (!response.ok) {
         setSnackBarState(true);
-        setAlertType('error')
-        setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+        setAlertType("error");
+        setResultMessage(
+          "Cannot process order at this time. Please try again later or contact support."
+        );
         throw new Error("Failed to create order");
       }
 
       // const data = await response.json();
       const data = await response.json();
+      
+          // Send order data to backend
+          fetch(`${AppEnv.baseUrl}/order/create-order`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({...orderData, payment_order_id: data?.orderId}),
+          })
+            .then((orderResponse) => {
+              if (!orderResponse.ok) {
+                throw new Error("Failed to create order");
+              }
+              return orderResponse.json();
+            })
+            .then((orderResult) => {
+              setOrderResult(orderResult?.data)
+              setSnackBarState(true);
+              setAlertType("success");
+              setErrorMessage(false);
+              setOrderSuccess(true);
+            })
+            .catch((orderError) => {
+              console.error("Error creating order:", orderError);
+              // alert("Error creating order.");
+
+              setSnackBarState(true);
+              setLoading(false);
+              setAlertType("error");
+              setResultMessage(
+                "Cannot process order at this time. Please try again later or contact support."
+              );
+            });
 
       // Load Cashfree SDK
       const cashfree = await load({
-        mode: "production", // or 'production' depending on your environment
+        mode: "test", // or 'production' depending on your environment
         // mode: "test",
       });
 
@@ -282,22 +342,24 @@ const Checkout = () => {
         paymentSessionId: data?.orderToken, // Use orderToken from your backend
         redirectTarget: "_modal", // Open payment page in a modal
         // redirectTarget: '_self', // Open payment page in a modal
-        mode: "production"
+        mode: "test",
       };
 
       // Trigger the checkout process
       cashfree.checkout(checkoutOptions).then((result) => {
         if (result.error) {
           setSnackBarState(true);
-          setAlertType('error')
-          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
-
+          setAlertType("error");
+          setResultMessage(
+            "Cannot process order at this time. Please try again later or contact support."
+          );
         } else if (result.redirect) {
           setSnackBarState(true);
-          setAlertType('error')
-          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+          setAlertType("error");
+          setResultMessage(
+            "Cannot process order at this time. Please try again later or contact support."
+          );
         } else if (result.paymentDetails) {
-
           // Determine the payment mode
 
           // console.log("Payment Mode:", paymentMode);
@@ -309,17 +371,14 @@ const Checkout = () => {
 
           // alert("Payment successful!");
           setSnackBarState(true);
-          setAlertType('success')
-          setResultMessage('Payment successful!!');
-
-
-          // Send order data to backend
-          fetch(`${AppEnv.baseUrl}/order/create-order`, {
+          setAlertType("success");
+          console.log("result.paymentDetails",result.paymentDetails);
+          fetch(`${AppEnv.baseUrl}/order/get-order/${orderResult?.id}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(orderData),
+            body: JSON.stringify({...orderData, payment_order_id: data?.orderId}),
           })
             .then((orderResponse) => {
               if (!orderResponse.ok) {
@@ -329,127 +388,43 @@ const Checkout = () => {
             })
             .then((orderResult) => {
               setSnackBarState(true);
-              setAlertType('success')
-              setErrorMessage(false)
-              setOrderSuccess(true)
-              navigate('/success', { state: { waybill: orderResult.data?.waybill, orderCost:  orderResult.data?.invoiceAmount } });
-              setWayBill(orderResult.data?.waybill)
-              // console.log(orderSuccess, wayBill);
+              setAlertType("success");
+              navigate("/success", {
+                state: {
+                  invoiceAmount: orderResult.data?.invoiceAmount,
+                  order: orderResult.data?.order,
+                },
+              });
+              // setWayBill(orderResult.data?.waybill);
               
-
-            //   {
-            //     "message": "Shipment created successfully",
-            //     "data": {
-            //         "id": 77,
-            //         "address": "54",
-            //         "address_type": "home",
-            //         "phone": "9360389903",
-            //         "name": "s.n. sanjay",
-            //         "pin": "629002",
-            //         "order": "CUST_ORDER_202504295571",
-            //         "country": "India",
-            //         "shipping_mode": "Surface",
-            //         "invoiceNumber": "202504295571",
-            //         "invoiceDate": "2025-04-29",
-            //         "transactionType": "COD",
-            //         "orderId": "CUST_ORDER_202504295571",
-            //         "quantity": "1",
-            //         "sku": "100MLP3",
-            //         "city": "Nagercoil",
-            //         "state": "Tamil Nadu",
-            //         "invoiceAmount": 359,
-            //         "taxExclusiveGross": 320.54,
-            //         "totalTaxAmount": 38.46,
-            //         "buyerName": "s.n. sanjay",
-            //         "total_product_cost": 359,
-            //         "total_shipment_cost": "",
-            //         "waybill": "34202610002660",
-            //         "payment": "COD",
-            //         "remarks": "",
-            //         "status": "Success",
-            //         "cgstTax": 19.23,
-            //         "sgstTax": 19.23,
-            //         "igstTax": 0,
-            //         "utgstTax": 0,
-            //         "customerBillToGST": null,
-            //         "updatedAt": "2025-04-29T07:23:54.644Z",
-            //         "createdAt": "2025-04-29T07:23:54.644Z"
-            //     },
-            //     "payload": {
-            //         "shipments": [
-            //             {
-            //                 "add": "54",
-            //                 "address_type": "home",
-            //                 "phone": "9360389903",
-            //                 "name": "s.n. sanjay",
-            //                 "pin": "629002",
-            //                 "order": "CUST_ORDER_202504295571",
-            //                 "payment_mode": "COD",
-            //                 "country": "India",
-            //                 "shipping_mode": "Surface",
-            //                 "city": "Nagercoil",
-            //                 "state": "Tamil Nadu",
-            //                 "cod_amount": 359
-            //             }
-            //         ],
-            //         "pickup_location": {
-            //             "name": "Thailash Original Thennamarakudi Oil",
-            //             "city": "Nagapattinam",
-            //             "pin": "611108",
-            //             "country": "India",
-            //             "phone": "8310418179",
-            //             "add": "3/127, Madhura Nagar, Puliyur, Nagapattinam"
-            //         }
-            //     },
-            //     "parsedResponse": {
-            //         "cash_pickups_count": 0,
-            //         "package_count": 1,
-            //         "upload_wbn": "UPL9747981706829581518",
-            //         "replacement_count": 0,
-            //         "pickups_count": 0,
-            //         "packages": [
-            //             {
-            //                 "status": "Success",
-            //                 "client": "0423ba-THAILASHORIGINALTHEN-do",
-            //                 "sort_code": "TRN/KPH",
-            //                 "remarks": [
-            //                     ""
-            //                 ],
-            //                 "waybill": "34202610002660",
-            //                 "cod_amount": 359,
-            //                 "payment": "COD",
-            //                 "serviceable": true,
-            //                 "refnum": "CUST_ORDER_202504295571"
-            //             }
-            //         ],
-            //         "cash_pickups": 0,
-            //         "cod_count": 1,
-            //         "success": true,
-            //         "prepaid_count": 0,
-            //         "cod_amount": 359
-            //     }
-            // }
-              setLoading(false)
-              setResultMessage('Your order has been created successfully! 🎉');
+              setErrorMessage(false);
+              setOrderSuccess(true);
+              setLoading(false);
+              setResultMessage("Your order has been created successfully! 🎉");
             })
             .catch((orderError) => {
               console.error("Error creating order:", orderError);
               // alert("Error creating order.");
 
               setSnackBarState(true);
-              setLoading(false)
-              setAlertType('error')
-              setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+              setLoading(false);
+              setAlertType("error");
+              setResultMessage(
+                "Cannot process order at this time. Please try again later or contact support."
+              );
             });
+          // setResultMessage("Payment successful!!");
+
         }
       });
     } catch (error) {
       console.error("Error initiating payment:", error);
       // alert("Error initiating payment.");
       setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Error initiating payment at this time. Please try again later or contact support.');
-
+      setAlertType("error");
+      setResultMessage(
+        "Error initiating payment at this time. Please try again later or contact support."
+      );
     }
   };
 
@@ -484,24 +459,29 @@ const Checkout = () => {
           shipping_mode: "Surface",
           city: formData?.city,
           state: customerData?.state,
-          cod_amount: Math.floor(formData?.quantity * singleProductData?.offer_price),
+          cod_amount: Math.floor(
+            (formData?.quantity * singleProductData?.offer_price) + 30
+          ),
         },
         orderDetial: {
           state: customerData?.state,
-          isUnion: stateData.find(el => el.state_name == formData?.state)?.is_union,
+          isUnion: stateData.find((el) => el.state_name == formData?.state)
+            ?.is_union,
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount: Math.floor(formData?.quantity * singleProductData?.offer_price),
+          invoiceAmount: Math.floor(
+            (formData?.quantity * singleProductData?.offer_price) + 30
+          ),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
-          total_product_cost:
-            Math.floor(formData?.quantity * singleProductData?.offer_price),
+          total_product_cost: Math.floor(
+            formData?.quantity * singleProductData?.offer_price
+          ),
           product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
         },
       };
-
 
       // Send order data to backend
       fetch(`${AppEnv.baseUrl}/order/create-order`, {
@@ -518,52 +498,64 @@ const Checkout = () => {
           return orderResponse.json();
         })
         .then((orderResult) => {
-          
-    setServiceable(true)
+          setServiceable(true);
           // setSnackBarState(true);
-          setAlertType('success')
-          setOrderSuccess(true)
-              navigate('/success', { state: { waybill: orderResult.data?.waybill,orderCost:  orderResult.data?.invoiceAmount } });
-          setWayBill(orderResult.data?.waybill)
+
+          setAlertType("success");
+          setOrderSuccess(true);
+
+          navigate("/success", {
+            state: {
+              waybill: orderResult.data?.waybill,
+              orderCost: orderResult.data?.invoiceAmount,
+            },
+          });
+          setWayBill(orderResult.data?.waybill);
           // console.log(orderSuccess, wayBill);
-          setLoading(false)
-          setResultMessage('Your order has been created successfully! 🎉');
+          setLoading(false);
+          setResultMessage("Your order has been created successfully! 🎉");
         })
         .catch((orderError) => {
-          setLoading(false)
+          setLoading(false);
           setSnackBarState(true);
-          setAlertType('error')
-          setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+          setAlertType("error");
+          setResultMessage(
+            "Cannot process order at this time. Please try again later or contact support."
+          );
         });
     } catch (error) {
       // console.error("Error initiating payment:", error);
-      setLoading(false)
+      setLoading(false);
 
       setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Cannot process order at this time. Please try again later or contact support.');
+      setAlertType("error");
+      setResultMessage(
+        "Cannot process order at this time. Please try again later or contact support."
+      );
     }
   };
 
-
   const snackBar = () => {
     return (
-      <Snackbar open={snackBarState} autoHideDuration={3000} onClose={handleClose}
+      <Snackbar
+        open={snackBarState}
+        autoHideDuration={3000}
+        onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      // key={vertical + horizontal}
+        // key={vertical + horizontal}
       >
         <Alert
           onClose={handleClose}
           severity={alertType}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {/* Payment Successful */}
           {resultMessage}
         </Alert>
       </Snackbar>
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     // Dynamically load the Cashfree SDK
@@ -597,6 +589,7 @@ const Checkout = () => {
 
     const result = await response.json();
 
+    setSingleProductData(result?.data[0])
     setProductData(result?.data);
   };
 
@@ -621,9 +614,18 @@ const Checkout = () => {
   return (
     <>
       {/* {orderSuccess ? <SuccessPage waybill={wayBill} /> : */}
-      <Box sx={{ p: 4, maxWidth: "950px", margin: "auto" }}>
-        {/* Order Summary */}
-        <Box sx={{ mb: 2 }} className="hidden sm:block">
+      <div className="flex flex-col lg:flex-row justify-center">
+        <Box
+          sx={{
+            p: 4,
+            maxWidth: "950px",
+            // margin: "auto",
+            pt: { xs: "10vh", sm: "15vh", md: "20vh" },
+            pb: { xs: "0", md: "4" },
+          }}
+        >
+          {/* Order Summary */}
+          {/* <Box sx={{ mb: 2 }} className="hidden sm:block">
           <div
             style={{
               display: "flex",
@@ -720,10 +722,10 @@ const Checkout = () => {
               );
             })}
           </div>
-        </Box>
+        </Box> */}
 
-        {/* Mobile view  */}
-        <Box style={{ marginTop: "6vh" }} className="block  lg:hidden ">
+          {/* Mobile view  */}
+          {/* <Box style={{ marginTop: "6vh" }} className="block  lg:hidden ">
           <div
             style={{
               display: "flex",
@@ -752,7 +754,6 @@ const Checkout = () => {
                   className="border-[#046E3D40] py-4"
                 >
                   <div className="">
-                    {/* <img src={item.image} alt='' /> */}
                     <Typography
                       variant="body2"
                       className="font-semibold"
@@ -823,222 +824,258 @@ const Checkout = () => {
             })}
           </div>
         </Box>
-        <Divider sx={{ mb: 4, mt: 4 }} />
+        <Divider sx={{ mb: 4, mt: 4 }} /> */}
 
-        <img src={banner} alt="" />
-        <Divider sx={{ mb: 4, mt: 4 }} />
+          <img src={banner} alt="" />
+        <Divider sx={{ mb: {xs: 2, lg: 4}, mt: {xs: 2, lg: 4} }} />
 
-        <Typography variant="h6" gutterBottom>
-          Product Information
-        </Typography>
-        <Box component="form" sx={{ mb: 4 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Select
-                labelId="product-variant-label"
-                id="product-variant"
-                name="productVariant"
-                fullWidth
-                value={formData.productVariant}
-                onChange={handleChange}
-                required
-                displayEmpty
-                error={errorMessage && !formData.productVariant}
-              >
-                {/* Default option */}
-                <MenuItem value="" disabled>
-                  Select Product
-                </MenuItem>
-                {/* Dynamic options */}
-                {productData?.map((item) => (
-                  <MenuItem value={item?.name} key={item?.id}>
-                    {item?.name}
+          <Typography variant="h6" gutterBottom>
+            Order Information
+          </Typography>
+          <Box component="form" sx={{ mb: 4 }}>
+            <Grid container spacing={2}>
+              {/* <Grid item xs={6}>
+                <Select
+                  labelId="product-variant-label"
+                  id="product-variant"
+                  name="productVariant"
+                  fullWidth
+                  value={formData.productVariant}
+                  onChange={handleChange}
+                  required
+                  displayEmpty
+                  error={errorMessage && !formData.productVariant}
+                >
+                  <MenuItem value="" disabled>
+                    Select Product
                   </MenuItem>
-                ))}
-              </Select>
-            </Grid>
+                  {productData?.map((item) => (
+                    <MenuItem value={item?.name} key={item?.id}>
+                      {item?.name?.toLowerCase() } - ₹{item?.offer_price}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid> */}
+               <Grid item xs={6}>
+  <TextField
+    fullWidth
+    label="Product"
+    variant="outlined"
+    name="Product"
+    type="text"
+    onChange={handleChange}
+    value={
+      productData?.[0]
+        ? `${productData[0].name?.toLowerCase()} - ₹${productData[0].offer_price}`
+        : ''
+    }
+    InputProps={{
+      readOnly: true,
+    }}
+  />
+</Grid>
 
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Quantity"
-                variant="outlined"
-                name="quantity"
-                type="number"
-                value={formData.quantity}
-                onChange={handleChange}
-                required
-                error={errorMessage && !formData.quantity}
-              />
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Quantity"
+                  variant="outlined"
+                  name="quantity"
+                  type="number"
+                  value={formData.quantity}
+                  onChange={handleChange}
+                  required
+                  error={errorMessage && !formData.quantity}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-          
-        </Box>
+          </Box>
 
-        {/* Shipping Information */}
-        <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-          Shipping Information
-        </Typography>
-        <Box component="form" sx={{ mb: 4 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="First Name"
-                variant="outlined"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                error={errorMessage && !formData.firstName}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Last Name"
-                variant="outlined"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                error={errorMessage && !formData.lastName}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Address"
-                variant="outlined"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                required
-                error={errorMessage && !formData.lastName}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Select
-                labelId="product-variant-label"
-                id="state"
-                name="state"
-                fullWidth
-                value={formData.state}
-                onChange={handleChange}
-                required
-                displayEmpty
-                error={errorMessage && !formData.state}
-              >
-                {/* Default option */}
-                <MenuItem value="" disabled>
-                  Select State
-                </MenuItem>
-                {/* Dynamic options */}
-                {stateData?.map((item) => (
-                  <MenuItem value={item?.state_name} key={item?.state_id}>
-                    {item?.state_name}
+          {/* Shipping Information */}
+          <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+            Shipping Information
+          </Typography>
+          <Box component="form" sx={{ mb: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="First Name"
+                  variant="outlined"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  error={errorMessage && !formData.firstName}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  variant="outlined"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  error={errorMessage && !formData.lastName}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Address"
+                  variant="outlined"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                  error={errorMessage && !formData.lastName}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Select
+                  labelId="product-variant-label"
+                  id="state"
+                  name="state"
+                  fullWidth
+                  value={formData.state}
+                  onChange={handleChange}
+                  required
+                  displayEmpty
+                  error={errorMessage && !formData.state}
+                >
+                  {/* Default option */}
+                  <MenuItem value="" disabled>
+                    Select State
                   </MenuItem>
-                ))}
-              </Select>
-            </Grid>
+                  {/* Dynamic options */}
+                  {stateData?.map((item) => (
+                    <MenuItem value={item?.state_name} key={item?.state_id}>
+                      {item?.state_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
 
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Postal Code"
+                  variant="outlined"
+                  name="postalCode"
+                  type="number"
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                  required
+                  error={errorMessage && !formData.postalCode}
+                  InputProps={{
+                    inputProps: { style: { appearance: "textfield" } },
+                  }}
+                  sx={{
+                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                      {
+                        display: "none",
+                      },
+                    "& input[type=number]": {
+                      MozAppearance: "textfield",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="City"
+                  variant="outlined"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                  error={errorMessage && !formData.city}
+                />
+              </Grid>
+              <Grid container spacing={2} item xs={12} sm={12}>
+                {pincode.length === 6 && (
+                  <Grid item xs={12} sm={12}>
+                    {serviceLoading ? (
+                      <CircularProgress size={24} sx={{ color: "#056E3D" }} />
+                    ) : serviceable ? (
+                      <Typography
+                        variant="body1"
+                        color="green"
+                        sx={{ display: "flex", alignItems: "center" }}
+                      >
+                        <CheckCircle sx={{ mr: 1 }} /> Serviceable Area
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="body1"
+                        color="red"
+                        sx={{ display: "flex", alignItems: "center" }}
+                      >
+                        <Cancel sx={{ mr: 1 }} /> This area is not serviceable
+                      </Typography>
+                    )}
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Postal Code"
-                variant="outlined"
-                name="postalCode"
-                type="number"
-                value={formData.postalCode}
-                onChange={handleChange}
-                required
-                error={errorMessage && !formData.postalCode}
-                InputProps={{
-      inputProps: { style: { appearance: "textfield" } },
-    }}
-    sx={{
-      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-        display: "none",
-      },
-      "& input[type=number]": {
-        MozAppearance: "textfield",
-      },
-    }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="City"
-                variant="outlined"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-                error={errorMessage && !formData.city}
-              />
-            </Grid>
-            <Grid container spacing={2} item xs={12} sm={12}>
-              {pincode.length === 6 && (
-    <Grid item xs={12} sm={12}>
-      {serviceLoading ? (
-        <CircularProgress size={24} sx={{ color: "#056E3D" }} />
-      ) : serviceable ? (
-        <Typography
-          variant="body1"
-          color="green"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <CheckCircle sx={{ mr: 1 }} /> Serviceable Area
-        </Typography>
-      ) : (
-        <Typography
-          variant="body1"
-          color="red"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <Cancel sx={{ mr: 1 }} /> This area is not serviceable
-        </Typography>
-      )}
-    </Grid>
-  )}
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* Contact Information */}
-        <Typography variant="h6" gutterBottom>
+          {/* Contact Information */}
+          {/* <Typography variant="h6" gutterBottom>
           Contact Information
-        </Typography>
-        <Box component="form" sx={{ mb: 4 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Phone"
-                variant="outlined"
-                name="phone"
-                value={formData.phone}
-                type="number"
-                onChange={handleChange}
-                required
-                InputProps={{
-      inputProps: { style: { appearance: "textfield" } },
-    }}
-    sx={{
-      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-        display: "none",
-      },
-      "& input[type=number]": {
-        MozAppearance: "textfield",
-      },
-    }}
-                error={errorMessage && !formData.phone}
-                helperText={errorMessage && formData.phone?.length != 10 ? "Phone number must be at least 10 digits " : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+        </Typography> */}
+          <Box component="form" sx={{ mb: 4 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  variant="outlined"
+                  name="phone"
+                  value={formData.phone}
+                  type="number"
+                  onChange={handleChange}
+                  required
+                  InputProps={{
+                    inputProps: { style: { appearance: "textfield" } },
+                  }}
+                  sx={{
+                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                      {
+                        display: "none",
+                      },
+                    "& input[type=number]": {
+                      MozAppearance: "textfield",
+                    },
+                  }}
+                  error={errorMessage && !formData.phone}
+                  helperText={
+                    errorMessage && formData.phone?.length != 10
+                      ? "Phone number must be at least 10 digits "
+                      : ""
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+  <TextField
+    fullWidth
+    label="GST Number (optional)"
+    variant="outlined"
+    name="gstNumber"
+    value={formData.gstNumber}
+    onChange={handleChange}
+    error={errorMessage && formData.gstNumber.length > 0 && formData.gstNumber.length !== 16}
+    helperText={
+      errorMessage && formData.gstNumber.length > 0 && formData.gstNumber.length !== 16
+        ? "GST number should be exactly 16 characters"
+        : ""
+    }
+  />
+</Grid>
+              {/* <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Email"
@@ -1049,20 +1086,20 @@ const Checkout = () => {
                 required
                 error={errorMessage && !formData.email}
               />
+            </Grid> */}
             </Grid>
-          </Grid>
-        </Box>
-        {/* <Box>
+          </Box>
+          {/* <Box>
           <Grid item container spacing={2}>
             Order Summary - {250}
           </Grid> */}
-        {/* {formData?.quantity && <>
+          {/* {formData?.quantity && <>
           <Typography variant="body1" gutterBottom> Order Summary - ₹. {formData?.quantity * singleProductData?.offer_price}</Typography>
           <Typography variant="body1" gutterBottom> Shipment Cost - ₹. {50}</Typography></>} */}
-        {/* </Box> */}
-        <Box component="form" sx={{ mb: 4 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={12}>
+          {/* </Box> */}
+          <Box component="form" sx={{ mb: 4 }}>
+            <Grid container spacing={2}>
+              {/* <Grid item xs={12} sm={12}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -1073,10 +1110,10 @@ const Checkout = () => {
                 }
                 label="Select if you have GST"
               />
-            </Grid>
+            </Grid> */}
 
-            {isGstChecked && (
-              <Grid item xs={12} sm={12}>
+              {/* {isGstChecked && ( */}
+              {/* <Grid item xs={12} sm={12}>
                 <TextField
                   fullWidth
                   label="GST Number"
@@ -1088,9 +1125,9 @@ const Checkout = () => {
                   error={errorMessage && !formData.gstNumber}
                   helperText={errorMessage && formData.gstNumber?.length !=  16 ? "GST number should be 16 character": ""}
                 />
-              </Grid>
-            )}
-            {/* <Grid item xs={12} sm={12}>
+              </Grid> */}
+              {/* )} */}
+              {/* <Grid item xs={12} sm={12}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -1114,75 +1151,165 @@ const Checkout = () => {
                 }
               />
             </Grid> */}
-          </Grid>
+            </Grid>
+          </Box>
         </Box>
+        <Box
+          className=" w-[95%] lg:w-[23%] px-6 pb-6 m-auto lg:m-0"
+          sx={{ pt: { xs: "0", md: "20vh" } }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Order Summary
+          </Typography>
 
-        {/* Place Order Button */}
-        <Box sx={{ textAlign: "center", display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "center" }}>
-          <Button
-            // onClick={initiatePayment}
+          {/* Place Order Button */}
+          <Box
+            sx={{
+              textAlign: "left",
+              display: "flex",
+              flexDirection: { xs: "column" },
+              justifyContent: "center",
+            }}
+          >
+         
+            <Box
+              sx={{
+                // maxWidth: 400,
+                width: "100%",
+                // border: '1px solid #ccc',
+                borderRadius: 2,
+                pb: 2,
+                // backgroundColor: '#f9f9f9',
+                fontFamily: "monospace",
+              }}
+            >
+              {/* <Typography variant="h6" gutterBottom>
+        🧾 Order Summary
+      </Typography> */}
+              <Divider sx={{ mb: 1 }} />
+
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+              >
+                <Typography>Order Amount</Typography>
+                <Typography>
+                  ₹
+                  {Math.floor(
+                    formData?.quantity * (productData?.[0]?.offer_price || 0)
+                  ) || 0}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+              >
+                <Typography>Delivery Fee</Typography>
+                <Typography>
+                  ₹
+                  {Math.floor(
+                    formData?.quantity * (productData?.[0]?.offer_price || 0)
+                  )
+                    ? 30
+                    : 0}
+                </Typography>
+              </Box>
+
+              <Divider sx={{ my: 1 }} />
+
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
+              >
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Total Payable
+                </Typography>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  ₹
+                  {(Math.floor(
+                    formData?.quantity * (productData?.[0]?.offer_price || 0)
+                  )
+                    ? Math.floor(
+                        formData?.quantity * (productData?.[0]?.offer_price || 0)
+                      ) + 30
+                    : 0) || 0}
+                </Typography>
+              </Box>
+            </Box>
+               {/* onClick={initiatePayment} */}
+            <Button
             onClick={() => createCustomer(false)}
             variant="contained"
             style={{
-              backgroundColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray when disabled
-              color: serviceable ? "white" : "#FFFFFF", // White text when disabled
+              backgroundColor: serviceable ? "#056E3D" : "#D3D3D3", 
+              color: serviceable ? "white" : "#FFFFFF",
             }}
             size="large"
             sx={{
               mb: 3,
-              mr: { sm: 2 },
+              // mr: { sm: 2 },
               paddingY: { xs: "10px", sm: "6px" },
             }}
-            disabled={serviceable && !loading ? false : true}
+            // serviceable && !loading ? false : true
+            disabled={ false}
           >
             Pay Now
-          </Button>
-          <Button
-            // onClick={initiatePayment}
-            onClick={() => createCustomer(true)}
-            variant="outlined"
-            style={{
-              borderColor: serviceable ? "#056E3D" : "#D3D3D3", // Light gray border when disabled
-              color: serviceable ? "#056E3D" : "#D3D3D3", // Light gray text when disabled
-            }}
-            size="large"
-            sx={{
-              mb: 3,
-              mr: { sm: 2 },
-              paddingY: { xs: "10px", sm: "6px" },
-              minWidth: '8vw'
-            }}
-            disabled={serviceable && !loading ? false : true}
-          >
-            {loading ? <CircularProgress size={24} color={"#056E3D"} /> : "Pay COD"}
-          </Button>
+          </Button> 
+            <Button
+              // onClick={initiatePayment}
+              onClick={() => createCustomer(true)}
+              variant="outlined"
+              style={{
+                borderColor: serviceable ? "#056E3D" : "#D3D3D3",
+                color: serviceable ? "#056E3D" : "#D3D3D3",
+              }}
+
+              // style={{
+              //   backgroundColor: serviceable ? "#056E3D" : "#D3D3D3",
+              //   color: serviceable ? "white" : "#FFFFFF",
+              //   // margin: 'auto'
+              // }}
+              size="large"
+              sx={{
+                // mb: 3,
+                // mr: { sm: 2 },
+                paddingY: { xs: "10px", sm: "6px" },
+                minWidth: "8vw",
+                margin: { xs: "auto", md: "0" },
+                maxWidth: { xs: "350px", md: "100%" },
+              }}
+              disabled={serviceable && !loading ? false : true}
+            >
+              {loading ? (
+                <CircularProgress size={24} color={"#056E3D"} />
+              ) : (
+                "Pay COD"
+              )}
+            </Button>
+          </Box>
+          <Grid item xs={12} sm={12} pt={1} className=" text-center ">
+            <span className="cursor-default text-xs">
+              By placing an order, you agree to our{" "}
+              <a
+                href="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#6200ed" }}
+              >
+                Terms and Conditions
+              </a>{" "}
+              and{" "}
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#6200ed" }}
+              >
+                Privacy Policy
+              </a>
+              .
+            </span>
+          </Grid>
         </Box>
-
-
-        <Grid item xs={12} sm={12} className=" sm:text-center ">
-          <span className="cursor-default text-sm">
-            By placing an order, you agree to our{" "}
-            <a
-              href="/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#6200ed" }}
-            >
-              Terms and Conditions
-            </a>{" "}
-            and{" "}
-            <a
-              href="/privacy-policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#6200ed" }}
-            >
-              Privacy Policy
-            </a>
-            .
-          </span>
-        </Grid>
-      </Box>
+      </div>
       {/* } */}
       {snackBar()}
       <Footer width={100} />
@@ -1191,4 +1318,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-
