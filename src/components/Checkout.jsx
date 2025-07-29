@@ -55,7 +55,7 @@ const Checkout = () => {
   const [errorMessage, setErrorMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serviceLoading, setServieLoading] = useState(false);
-  const [orderResult, setOrderResult] = useState();
+  const [createOrderResult, setCreateOrderResult] = useState();
   const [wayBill, setWayBill] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(false);
   // const { vertical, horizontal, open } = snackBarState;
@@ -153,15 +153,18 @@ const Checkout = () => {
       !formData.state ||
       !formData.address ||
       !formData.firstName ||
-      (!formData.gstNumber.length == 0 || !formData.gstNumber.length == 16) ||
+      !formData.gstNumber.length == 0 ||
+      !formData.gstNumber.length == 16 ||
       !formData.quantity
     ) {
       console.log(formData);
-      
+
       setErrorMessage(true);
       setSnackBarState(true);
-      setAlertType('error')
-      setResultMessage('Oops! Some fields are missing. Please fill them out to continue.');
+      setAlertType("error");
+      setResultMessage(
+        "Oops! Some fields are missing. Please fill them out to continue."
+      );
       return;
     }
     setLoading(true);
@@ -213,6 +216,9 @@ const Checkout = () => {
       // alert('Error creating customer.');
     }
   };
+  useEffect(() => {
+    console.log("createOrderResult", createOrderResult);
+  }, [createOrderResult]);
 
   const initiatePayment = async (customerData) => {
     if (!isSdkLoaded) {
@@ -228,7 +234,7 @@ const Checkout = () => {
 
       const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
       const isUnion = stateData?.find((item) => item?.name == formData?.state);
-   
+
       const orderData = {
         shipments: {
           add: formData?.address,
@@ -243,7 +249,7 @@ const Checkout = () => {
           city: formData?.city,
           state: customerData?.state,
           cod_amount: Math.floor(
-            (formData?.quantity * singleProductData?.offer_price * 0.9) + 30
+            formData?.quantity * singleProductData?.offer_price * 0.9 + 30
           ),
         },
         orderDetial: {
@@ -253,11 +259,11 @@ const Checkout = () => {
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
           invoiceAmount: Math.floor(
-            (formData?.quantity * singleProductData?.offer_price * 0.9) + 30
+            formData?.quantity * singleProductData?.offer_price * 0.9 + 30
           ),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost: Math.floor(
-            (formData?.quantity * singleProductData?.offer_price * 0.9) + 30
+            formData?.quantity * singleProductData?.offer_price * 0.9 + 30
           ),
           product_price: singleProductData?.offer_price,
           total_shipment_cost: "",
@@ -266,26 +272,29 @@ const Checkout = () => {
         },
       };
 
-         const paymentData = {
+      const paymentData = {
         orderAmount: Math.floor(
           formData?.quantity * singleProductData?.offer_price * 0.9
         ),
         customerEmail: formData?.email,
         customerPhone: formData?.phone,
         customerId: customerData?.id.toString(),
-        orderData
+        orderData,
       };
 
       // Create the order via backend
       // order api
-      // const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
-      const response = await fetch(`http://localhost:3300/payment/create-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(paymentData),
-      });
+      const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
+      // const response = await fetch(
+      //   `http://localhost:3300/payment/create-order`,
+      //   {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentData),
+        }
+      );
 
       if (!response.ok) {
         setSnackBarState(true);
@@ -298,43 +307,86 @@ const Checkout = () => {
 
       // const data = await response.json();
       const data = await response.json();
-      
-          // Send order data to backend
-          fetch(`${AppEnv.baseUrl}/order/create-order`, {
+      let orderResult = null;
+
+      // // Send order data to backend
+      // fetch(`${AppEnv.baseUrl}/order/create-order`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ ...orderData, payment_order_id: data?.orderId }),
+      // })
+      //   .then((orderResponse) => {
+      //     if (!orderResponse.ok) {
+      //       throw new Error("Failed to create order");
+      //     }
+      //     return orderResponse.json();
+      //   })
+      //   .then((orderResult) => {
+      //     console.log("ffffffffffffff", orderResult);
+
+      //     orderResult = orderResult
+      //     // setCreateOrderResult(orderResult);
+      //     setSnackBarState(true);
+      //     setAlertType("success");
+      //     setErrorMessage(false);
+      //     setOrderSuccess(true);
+      //   })
+      //   .catch((orderError) => {
+      //     console.error("Error creating order:", orderError);
+      //     // alert("Error creating order.");
+
+      //     setSnackBarState(true);
+      //     setLoading(false);
+      //     setAlertType("error");
+      //     setResultMessage(
+      //       "Cannot process order at this time. Please try again later or contact support."
+      //     );
+      //     return;
+      //   });
+
+      try {
+        const orderResponse = await fetch(
+          `${AppEnv.baseUrl}/order/create-order`,
+          {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({...orderData, payment_order_id: data?.orderId}),
-          })
-            .then((orderResponse) => {
-              if (!orderResponse.ok) {
-                throw new Error("Failed to create order");
-              }
-              return orderResponse.json();
-            })
-            .then((orderResult) => {
-              setOrderResult(orderResult?.data)
-              setSnackBarState(true);
-              setAlertType("success");
-              setErrorMessage(false);
-              setOrderSuccess(true);
-            })
-            .catch((orderError) => {
-              console.error("Error creating order:", orderError);
-              // alert("Error creating order.");
+            body: JSON.stringify({
+              ...orderData,
+              payment_order_id: data?.orderId,
+            }),
+          }
+        );
 
-              setSnackBarState(true);
-              setLoading(false);
-              setAlertType("error");
-              setResultMessage(
-                "Cannot process order at this time. Please try again later or contact support."
-              );
-            });
+        if (!orderResponse.ok) {
+          throw new Error("Failed to create order");
+        }
+
+        orderResult = await orderResponse.json();
+        console.log("ffffffffffffff", orderResult);
+
+        // Optional: setCreateOrderResult(orderResult);
+        // setSnackBarState(true);
+        // setAlertType("success");
+        // setErrorMessage(false);
+        // setOrderSuccess(true);
+      } catch (orderError) {
+        console.error("Error creating order:", orderError);
+        setSnackBarState(true);
+        setLoading(false);
+        setAlertType("error");
+        setResultMessage(
+          "Cannot process order at this time. Please try again later or contact support."
+        );
+        return;
+      }
 
       // Load Cashfree SDK
       const cashfree = await load({
-        mode: "test", // or 'production' depending on your environment
+        mode: "production", // or 'production' depending on your environment
         // mode: "test",
       });
 
@@ -342,7 +394,7 @@ const Checkout = () => {
         paymentSessionId: data?.orderToken, // Use orderToken from your backend
         redirectTarget: "_modal", // Open payment page in a modal
         // redirectTarget: '_self', // Open payment page in a modal
-        mode: "test",
+        mode: "production",
       };
 
       // Trigger the checkout process
@@ -372,13 +424,20 @@ const Checkout = () => {
           // alert("Payment successful!");
           setSnackBarState(true);
           setAlertType("success");
-          console.log("result.paymentDetails",result.paymentDetails);
-          fetch(`${AppEnv.baseUrl}/order/get-order/${orderResult?.id}`, {
-            method: "POST",
+          console.log(
+            "result.paymentDetails",
+            result.paymentDetails,
+            orderResult
+          );
+          fetch(`${AppEnv.baseUrl}/order/get-order/${orderResult?.data?.id}`, {
+            method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({...orderData, payment_order_id: data?.orderId}),
+            // body: JSON.stringify({
+            //   ...orderData,
+            //   payment_order_id: data?.orderId,
+            // }),
           })
             .then((orderResponse) => {
               if (!orderResponse.ok) {
@@ -396,7 +455,7 @@ const Checkout = () => {
                 },
               });
               // setWayBill(orderResult.data?.waybill);
-              
+
               setErrorMessage(false);
               setOrderSuccess(true);
               setLoading(false);
@@ -414,7 +473,6 @@ const Checkout = () => {
               );
             });
           // setResultMessage("Payment successful!!");
-
         }
       });
     } catch (error) {
@@ -460,7 +518,7 @@ const Checkout = () => {
           city: formData?.city,
           state: customerData?.state,
           cod_amount: Math.floor(
-            (formData?.quantity * singleProductData?.offer_price) + 30
+            formData?.quantity * singleProductData?.offer_price + 30
           ),
         },
         orderDetial: {
@@ -470,7 +528,7 @@ const Checkout = () => {
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
           invoiceAmount: Math.floor(
-            (formData?.quantity * singleProductData?.offer_price) + 30
+            formData?.quantity * singleProductData?.offer_price + 30
           ),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost: Math.floor(
@@ -505,10 +563,10 @@ const Checkout = () => {
           setOrderSuccess(true);
 
           navigate("/success", {
-            state: {
-              waybill: orderResult.data?.waybill,
-              orderCost: orderResult.data?.invoiceAmount,
-            },
+                state: {
+                  invoiceAmount: orderResult.data?.invoiceAmount,
+                  order: orderResult.data?.order,
+                },
           });
           setWayBill(orderResult.data?.waybill);
           // console.log(orderSuccess, wayBill);
@@ -523,6 +581,7 @@ const Checkout = () => {
             "Cannot process order at this time. Please try again later or contact support."
           );
         });
+        
     } catch (error) {
       // console.error("Error initiating payment:", error);
       setLoading(false);
@@ -589,7 +648,7 @@ const Checkout = () => {
 
     const result = await response.json();
 
-    setSingleProductData(result?.data[0])
+    setSingleProductData(result?.data[0]);
     setProductData(result?.data);
   };
 
@@ -827,7 +886,7 @@ const Checkout = () => {
         <Divider sx={{ mb: 4, mt: 4 }} /> */}
 
           <img src={banner} alt="" />
-        <Divider sx={{ mb: {xs: 2, lg: 4}, mt: {xs: 2, lg: 4} }} />
+          <Divider sx={{ mb: { xs: 2, lg: 4 }, mt: { xs: 2, lg: 4 } }} />
 
           <Typography variant="h6" gutterBottom>
             Order Information
@@ -856,24 +915,26 @@ const Checkout = () => {
                   ))}
                 </Select>
               </Grid> */}
-               <Grid item xs={6}>
-  <TextField
-    fullWidth
-    label="Product"
-    variant="outlined"
-    name="Product"
-    type="text"
-    onChange={handleChange}
-    value={
-      productData?.[0]
-        ? `${productData[0].name?.toLowerCase()} - ₹${productData[0].offer_price}`
-        : ''
-    }
-    InputProps={{
-      readOnly: true,
-    }}
-  />
-</Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Product"
+                  variant="outlined"
+                  name="Product"
+                  type="text"
+                  onChange={handleChange}
+                  value={
+                    productData?.[0]
+                      ? `${productData[0].name?.toLowerCase()} - ₹${
+                          productData[0].offer_price
+                        }`
+                      : ""
+                  }
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Grid>
 
               <Grid item xs={6}>
                 <TextField
@@ -1060,21 +1121,27 @@ const Checkout = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-  <TextField
-    fullWidth
-    label="GST Number (optional)"
-    variant="outlined"
-    name="gstNumber"
-    value={formData.gstNumber}
-    onChange={handleChange}
-    error={errorMessage && formData.gstNumber.length > 0 && formData.gstNumber.length !== 16}
-    helperText={
-      errorMessage && formData.gstNumber.length > 0 && formData.gstNumber.length !== 16
-        ? "GST number should be exactly 16 characters"
-        : ""
-    }
-  />
-</Grid>
+                <TextField
+                  fullWidth
+                  label="GST Number (optional)"
+                  variant="outlined"
+                  name="gstNumber"
+                  value={formData.gstNumber}
+                  onChange={handleChange}
+                  error={
+                    errorMessage &&
+                    formData.gstNumber.length > 0 &&
+                    formData.gstNumber.length !== 16
+                  }
+                  helperText={
+                    errorMessage &&
+                    formData.gstNumber.length > 0 &&
+                    formData.gstNumber.length !== 16
+                      ? "GST number should be exactly 16 characters"
+                      : ""
+                  }
+                />
+              </Grid>
               {/* <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1171,7 +1238,6 @@ const Checkout = () => {
               justifyContent: "center",
             }}
           >
-         
             <Box
               sx={{
                 // maxWidth: 400,
@@ -1228,31 +1294,32 @@ const Checkout = () => {
                     formData?.quantity * (productData?.[0]?.offer_price || 0)
                   )
                     ? Math.floor(
-                        formData?.quantity * (productData?.[0]?.offer_price || 0)
+                        formData?.quantity *
+                          (productData?.[0]?.offer_price || 0)
                       ) + 30
                     : 0) || 0}
                 </Typography>
               </Box>
             </Box>
-               {/* onClick={initiatePayment} */}
+            {/* onClick={initiatePayment} */}
             <Button
-            onClick={() => createCustomer(false)}
-            variant="contained"
-            style={{
-              backgroundColor: serviceable ? "#056E3D" : "#D3D3D3", 
-              color: serviceable ? "white" : "#FFFFFF",
-            }}
-            size="large"
-            sx={{
-              mb: 3,
-              // mr: { sm: 2 },
-              paddingY: { xs: "10px", sm: "6px" },
-            }}
-            // serviceable && !loading ? false : true
-            disabled={ false}
-          >
-            Pay Now
-          </Button> 
+              onClick={() => createCustomer(false)}
+              variant="contained"
+              style={{
+                backgroundColor: serviceable ? "#056E3D" : "#D3D3D3",
+                color: serviceable ? "white" : "#FFFFFF",
+              }}
+              size="large"
+              sx={{
+                mb: 3,
+                // mr: { sm: 2 },
+                paddingY: { xs: "10px", sm: "6px" },
+              }}
+              // serviceable && !loading ? false : true
+              disabled={serviceable && !loading ? false : true}
+            >
+              Pay Now
+            </Button>
             <Button
               // onClick={initiatePayment}
               onClick={() => createCustomer(true)}
@@ -1261,7 +1328,6 @@ const Checkout = () => {
                 borderColor: serviceable ? "#056E3D" : "#D3D3D3",
                 color: serviceable ? "#056E3D" : "#D3D3D3",
               }}
-
               // style={{
               //   backgroundColor: serviceable ? "#056E3D" : "#D3D3D3",
               //   color: serviceable ? "white" : "#FFFFFF",
