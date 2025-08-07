@@ -16,7 +16,7 @@ const Terms = () => {
             
             <h1 className="edu-title m-t text-[30px] sm:text-[30px] font-bold">Terms and Conditions</h1>
             <hr className="w-full" /> <br />
-            <p>Welcome to Thailash! These Terms and Conditions ("Terms") govern your use of our website ("Website") and any services or products provided through it. By accessing or using our Website, you agree to comply with and be bound by these Terms. If you do not agree, please refrain from using our Website.</p>
+            <p>Welcome to THAILASH ORIGINAL THENNAMARAKUDI OIL ! These Terms and Conditions ("Terms") govern your use of our website ("Website") and any services or products provided through it. By accessing or using our Website, you agree to comply with and be bound by these Terms. If you do not agree, please refrain from using our Website.</p>
             <br />
             <p className="font-bold">Acceptance of Terms</p>
             <br />
@@ -74,7 +74,7 @@ const Terms = () => {
             <br />
             <p className="font-bold">Returns and Refunds.</p>
             <br />
-            <p>Returns and refunds are subject to our [Return and Refund Policy].</p>
+            <p>Returns and refunds are subject to our Return and Refund Policy.</p>
             <br />
             <p>Products must be returned in their original condition with proof of purchase.</p>
             <br />

@@ -16,7 +16,7 @@ const Policy = () => {
             
             <h1 className="edu-title m-t text-[30px] sm:text-[30px] font-bold">Privacy and Policy</h1>
             <hr className="w-full" /> <br />
-            <p>Thailash values your privacy and is committed to protecting your personal data. This Privacy Policy outlines how we collect, use, share, and safeguard your information when you visit our website ("Website") or make a purchase. By using our Website, you consent to the practices described in this policy.</p>
+            <p>THAILASH ORIGINAL THENNAMARAKUDI OIL values your privacy and is committed to protecting your personal data. This Privacy Policy outlines how we collect, use, share, and safeguard your information when you visit our website ("Website") or make a purchase. By using our Website, you consent to the practices described in this policy.</p>
             <br />
             <p className="font-bold">Information We Collect</p>
             <br />
