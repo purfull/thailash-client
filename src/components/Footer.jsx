@@ -1,12 +1,17 @@
 import { AiOutlineMail, AiOutlinePhone, AiOutlineRight } from "react-icons/ai";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 
 const Footer = (width) => {
+  const navigate = useNavigate();
     const handleHomeClick = () => {
+        
+    navigate("/");
       window.scrollTo(0, 0);
     };
     const handleReviewClick = () => {
+    navigate("/");
         window.scrollTo(0, 1300);
 
     }

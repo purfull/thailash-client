@@ -220,271 +220,320 @@ const Checkout = () => {
     console.log("createOrderResult", createOrderResult);
   }, [createOrderResult]);
 
+  // const initiatePayment = async (customerData) => {
+  //   if (!isSdkLoaded) {
+  //     // alert("Cashfree SDK not loaded yet.");
+  //     return; // Exit if the SDK is not loaded
+  //   }
+  //   try {
+  //     const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
+  //       .toString()
+  //       .padStart(4, "0");
+  //     const today = new Date();
+  //     const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
+
+  //     const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
+  //     const isUnion = stateData?.find((item) => item?.name == formData?.state);
+
+  //     const orderData = {
+  //       shipments: {
+  //         add: formData?.address,
+  //         address_type: "home",
+  //         phone: customerData?.phone,
+  //         name: formData?.firstName + " " + formData?.lastName,
+  //         pin: formData?.postalCode,
+  //         order: orderId,
+  //         payment_mode: "Pre-paid", //Pre-paid or COD
+  //         country: "India",
+  //         shipping_mode: "Surface",
+  //         city: formData?.city,
+  //         state: customerData?.state,
+  //         cod_amount: Math.floor(
+  //           formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+  //         ),
+  //       },
+  //       orderDetial: {
+  //         state: customerData?.state,
+  //         isUnion: stateData.find((el) => el.state_name == formData?.state)
+  //           ?.is_union,
+  //         quantity: formData?.quantity,
+  //         invoiceNumber: `${formattedDate}${random4DigitNumber}`,
+  //         invoiceAmount: Math.floor(
+  //           formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+  //         ),
+  //         buyerName: customerData?.first_name + " " + customerData?.last_name,
+  //         total_product_cost: Math.floor(
+  //           formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+  //         ),
+  //         product_price: singleProductData?.offer_price,
+  //         total_shipment_cost: "",
+  //         sku: singleProductData?.sku,
+  //         gst: customerData?.gst ? customerData?.gst : null,
+  //       },
+  //     };
+
+  //     const paymentData = {
+  //       orderAmount: Math.floor(
+  //         formData?.quantity * singleProductData?.offer_price * 0.9
+  //       ),
+  //       customerEmail: formData?.email,
+  //       customerPhone: formData?.phone,
+  //       customerId: customerData?.id.toString(),
+  //       orderData,
+  //     };
+
+  //     // Create the order via backend
+  //     // order api
+  //     const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
+  //     // const response = await fetch(
+  //     //   `http://localhost:3300/payment/create-order`,
+  //     //   {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(paymentData),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       setSnackBarState(true);
+  //       setAlertType("error");
+  //       setResultMessage(
+  //         "Cannot process order at this time. Please try again later or contact support."
+  //       );
+  //       throw new Error("Failed to create order");
+  //     }
+
+  //     // const data = await response.json();
+  //     const data = await response.json();
+  //     let orderResult = null;
+
+
+  //     try {
+  //       const orderResponse = await fetch(
+  //         `${AppEnv.baseUrl}/order/create-order`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             ...orderData,
+  //             payment_order_id: data?.orderId,
+  //           }),
+  //         }
+  //       );
+
+  //       if (!orderResponse.ok) {
+  //         throw new Error("Failed to create order");
+  //       }
+
+  //       orderResult = await orderResponse.json();
+  //       console.log("ffffffffffffff", orderResult);
+
+  //     } catch (orderError) {
+  //       console.error("Error creating order:", orderError);
+  //       setSnackBarState(true);
+  //       setLoading(false);
+  //       setAlertType("error");
+  //       setResultMessage(
+  //         "Cannot process order at this time. Please try again later or contact support."
+  //       );
+  //       return;
+  //     }
+
+  //     // Load Cashfree SDK
+  //     const cashfree = await load({
+  //       mode: "production", // or 'production' depending on your environment
+  //       // mode: "test",
+  //     });
+
+  //     const checkoutOptions = {
+  //       paymentSessionId: data?.orderToken, // Use orderToken from your backend
+  //       redirectTarget: "_modal", // Open payment page in a modal
+  //       // redirectTarget: '_self', // Open payment page in a modal
+  //       mode: "production",
+  //     };
+
+  //     // Trigger the checkout process
+  //     cashfree.checkout(checkoutOptions).then((result) => {
+  //       if (result.error) {
+  //         setSnackBarState(true);
+  //         setAlertType("error");
+  //         setResultMessage(
+  //           "Cannot process order at this time. Please try again later or contact support."
+  //         );
+  //       } else if (result.redirect) {
+  //         setSnackBarState(true);
+  //         setAlertType("error");
+  //         setResultMessage(
+  //           "Cannot process order at this time. Please try again later or contact support."
+  //         );
+  //       } else if (result.paymentDetails) {
+  //         setSnackBarState(true);
+  //         setAlertType("success");
+  //         console.log(
+  //           "result.paymentDetails",
+  //           result.paymentDetails,
+  //           orderResult
+  //         );
+  //         fetch(`${AppEnv.baseUrl}/order/get-order/${orderResult?.data?.id}`, {
+  //           method: "GET",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           // body: JSON.stringify({
+  //           //   ...orderData,
+  //           //   payment_order_id: data?.orderId,
+  //           // }),
+  //         })
+  //           .then((orderResponse) => {
+  //             if (!orderResponse.ok) {
+  //               throw new Error("Failed to create order");
+  //             }
+  //             return orderResponse.json();
+  //           })
+  //           .then((orderResult) => {
+  //             setSnackBarState(true);
+  //             setAlertType("success");
+  //             navigate("/success", {
+  //               state: {
+  //                 invoiceAmount: orderResult.data?.invoiceAmount,
+  //                 order: orderResult.data?.order,
+  //               },
+  //             });
+  //             // setWayBill(orderResult.data?.waybill);
+
+  //             setErrorMessage(false);
+  //             setOrderSuccess(true);
+  //             setLoading(false);
+  //             setResultMessage("Your order has been created successfully! 🎉");
+  //           })
+  //           .catch((orderError) => {
+  //             console.error("Error creating order:", orderError);
+  //             // alert("Error creating order.");
+
+  //             setSnackBarState(true);
+  //             setLoading(false);
+  //             setAlertType("error");
+  //             setResultMessage(
+  //               "Cannot process order at this time. Please try again later or contact support."
+  //             );
+  //           });
+  //         // setResultMessage("Payment successful!!");
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error("Error initiating payment:", error);
+  //     // alert("Error initiating payment.");
+  //     setSnackBarState(true);
+  //     setAlertType("error");
+  //     setResultMessage(
+  //       "Error initiating payment at this time. Please try again later or contact support."
+  //     );
+  //   }
+  // };
+
   const initiatePayment = async (customerData) => {
-    if (!isSdkLoaded) {
-      // alert("Cashfree SDK not loaded yet.");
-      return; // Exit if the SDK is not loaded
-    }
-    try {
-      const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
-        .toString()
-        .padStart(4, "0");
-      const today = new Date();
-      const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
+  try {
+    // Generate Order ID
+    const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
+      .toString()
+      .padStart(4, "0");
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
+    const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
 
-      const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
-      const isUnion = stateData?.find((item) => item?.name == formData?.state);
-
-      const orderData = {
-        shipments: {
-          add: formData?.address,
-          address_type: "home",
-          phone: customerData?.phone,
-          name: formData?.firstName + " " + formData?.lastName,
-          pin: formData?.postalCode,
-          order: orderId,
-          payment_mode: "Pre-paid", //Pre-paid or COD
-          country: "India",
-          shipping_mode: "Surface",
-          city: formData?.city,
-          state: customerData?.state,
-          cod_amount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price * 0.9 + 30
-          ),
-        },
-        orderDetial: {
-          state: customerData?.state,
-          isUnion: stateData.find((el) => el.state_name == formData?.state)
-            ?.is_union,
-          quantity: formData?.quantity,
-          invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-          invoiceAmount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price * 0.9 + 30
-          ),
-          buyerName: customerData?.first_name + " " + customerData?.last_name,
-          total_product_cost: Math.floor(
-            formData?.quantity * singleProductData?.offer_price * 0.9 + 30
-          ),
-          product_price: singleProductData?.offer_price,
-          total_shipment_cost: "",
-          sku: singleProductData?.sku,
-          gst: customerData?.gst ? customerData?.gst : null,
-        },
-      };
-
-      const paymentData = {
-        orderAmount: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9
+    const orderData = {
+      shipments: {
+        add: formData?.address,
+        address_type: "home",
+        phone: customerData?.phone,
+        name: `${formData?.firstName} ${formData?.lastName}`,
+        pin: formData?.postalCode,
+        order: orderId,
+        payment_mode: "Pre-paid",
+        country: "India",
+        shipping_mode: "Surface",
+        city: formData?.city,
+        state: customerData?.state,
+        cod_amount: Math.floor(
+          formData?.quantity * singleProductData?.offer_price * 0.9 + 30
         ),
-        customerEmail: formData?.email,
-        customerPhone: formData?.phone,
-        customerId: customerData?.id.toString(),
-        orderData,
-      };
+      },
+      orderDetial: {
+        state: customerData?.state,
+        isUnion: stateData.find((el) => el.state_name == formData?.state)?.is_union,
+        quantity: formData?.quantity,
+        invoiceNumber: `${formattedDate}${random4DigitNumber}`,
+        invoiceAmount: Math.floor(
+          formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+        ),
+        buyerName: `${customerData?.first_name} ${customerData?.last_name}`,
+        total_product_cost: Math.floor(
+          formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+        ),
+        product_price: singleProductData?.offer_price,
+        total_shipment_cost: "",
+        sku: singleProductData?.sku,
+        gst: customerData?.gst || null,
+      },
+    };
 
-      // Create the order via backend
-      // order api
-      const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
-      // const response = await fetch(
-      //   `http://localhost:3300/payment/create-order`,
-      //   {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(paymentData),
-        }
-      );
+    const paymentData = {
+      orderId,
+      orderAmount: Math.floor(
+        formData?.quantity * singleProductData?.offer_price * 0.9
+      ),
+      customerEmail: formData?.email,
+      customerPhone: formData?.phone,
+      customerId: customerData?.id.toString(),
+      // orderData,
+    };
 
-      if (!response.ok) {
-        setSnackBarState(true);
-        setAlertType("error");
-        setResultMessage(
-          "Cannot process order at this time. Please try again later or contact support."
-        );
-        throw new Error("Failed to create order");
-      }
 
-      // const data = await response.json();
-      const data = await response.json();
-      let orderResult = null;
+    // Call backend to create PhonePe order
+    const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(paymentData),
+    });
 
-      // // Send order data to backend
-      // fetch(`${AppEnv.baseUrl}/order/create-order`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ ...orderData, payment_order_id: data?.orderId }),
-      // })
-      //   .then((orderResponse) => {
-      //     if (!orderResponse.ok) {
-      //       throw new Error("Failed to create order");
-      //     }
-      //     return orderResponse.json();
-      //   })
-      //   .then((orderResult) => {
-      //     console.log("ffffffffffffff", orderResult);
+    if (!response.ok) {
+      setLoading(false)
+      throw new Error("Failed to initiate PhonePe payment")
 
-      //     orderResult = orderResult
-      //     // setCreateOrderResult(orderResult);
-      //     setSnackBarState(true);
-      //     setAlertType("success");
-      //     setErrorMessage(false);
-      //     setOrderSuccess(true);
-      //   })
-      //   .catch((orderError) => {
-      //     console.error("Error creating order:", orderError);
-      //     // alert("Error creating order.");
+    };
 
-      //     setSnackBarState(true);
-      //     setLoading(false);
-      //     setAlertType("error");
-      //     setResultMessage(
-      //       "Cannot process order at this time. Please try again later or contact support."
-      //     );
-      //     return;
-      //   });
+    const paymentResponce = await response.json();
+    // create order
+    
+    const orderResponse = await fetch(`${AppEnv.baseUrl}/order/create-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({...orderData, payment_order_id: paymentResponce.orderId }),
+    });
 
-      try {
-        const orderResponse = await fetch(
-          `${AppEnv.baseUrl}/order/create-order`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...orderData,
-              payment_order_id: data?.orderId,
-            }),
-          }
-        );
+    if (!orderResponse.ok) {
+      
+      setLoading(false)
+      throw new Error("Failed to initiate order")
+    };
 
-        if (!orderResponse.ok) {
-          throw new Error("Failed to create order");
-        }
 
-        orderResult = await orderResponse.json();
-        console.log("ffffffffffffff", orderResult);
+    // Redirect to PhonePe payment page
+    // alert(redirectUrl)
+    
+    window.location.href = paymentResponce.redirectUrl;
 
-        // Optional: setCreateOrderResult(orderResult);
-        // setSnackBarState(true);
-        // setAlertType("success");
-        // setErrorMessage(false);
-        // setOrderSuccess(true);
-      } catch (orderError) {
-        console.error("Error creating order:", orderError);
-        setSnackBarState(true);
-        setLoading(false);
-        setAlertType("error");
-        setResultMessage(
-          "Cannot process order at this time. Please try again later or contact support."
-        );
-        return;
-      }
-
-      // Load Cashfree SDK
-      const cashfree = await load({
-        mode: "production", // or 'production' depending on your environment
-        // mode: "test",
-      });
-
-      const checkoutOptions = {
-        paymentSessionId: data?.orderToken, // Use orderToken from your backend
-        redirectTarget: "_modal", // Open payment page in a modal
-        // redirectTarget: '_self', // Open payment page in a modal
-        mode: "production",
-      };
-
-      // Trigger the checkout process
-      cashfree.checkout(checkoutOptions).then((result) => {
-        if (result.error) {
-          setSnackBarState(true);
-          setAlertType("error");
-          setResultMessage(
-            "Cannot process order at this time. Please try again later or contact support."
-          );
-        } else if (result.redirect) {
-          setSnackBarState(true);
-          setAlertType("error");
-          setResultMessage(
-            "Cannot process order at this time. Please try again later or contact support."
-          );
-        } else if (result.paymentDetails) {
-          // Determine the payment mode
-
-          // console.log("Payment Mode:", paymentMode);
-
-          // Update orderData with the payment mode
-          // orderData.shipments.payment_mode = paymentMode;
-
-          // Log orderData for verification
-
-          // alert("Payment successful!");
-          setSnackBarState(true);
-          setAlertType("success");
-          console.log(
-            "result.paymentDetails",
-            result.paymentDetails,
-            orderResult
-          );
-          fetch(`${AppEnv.baseUrl}/order/get-order/${orderResult?.data?.id}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            // body: JSON.stringify({
-            //   ...orderData,
-            //   payment_order_id: data?.orderId,
-            // }),
-          })
-            .then((orderResponse) => {
-              if (!orderResponse.ok) {
-                throw new Error("Failed to create order");
-              }
-              return orderResponse.json();
-            })
-            .then((orderResult) => {
-              setSnackBarState(true);
-              setAlertType("success");
-              navigate("/success", {
-                state: {
-                  invoiceAmount: orderResult.data?.invoiceAmount,
-                  order: orderResult.data?.order,
-                },
-              });
-              // setWayBill(orderResult.data?.waybill);
-
-              setErrorMessage(false);
-              setOrderSuccess(true);
-              setLoading(false);
-              setResultMessage("Your order has been created successfully! 🎉");
-            })
-            .catch((orderError) => {
-              console.error("Error creating order:", orderError);
-              // alert("Error creating order.");
-
-              setSnackBarState(true);
-              setLoading(false);
-              setAlertType("error");
-              setResultMessage(
-                "Cannot process order at this time. Please try again later or contact support."
-              );
-            });
-          // setResultMessage("Payment successful!!");
-        }
-      });
-    } catch (error) {
-      console.error("Error initiating payment:", error);
-      // alert("Error initiating payment.");
-      setSnackBarState(true);
-      setAlertType("error");
-      setResultMessage(
-        "Error initiating payment at this time. Please try again later or contact support."
-      );
-    }
-  };
+  } catch (error) {
+    console.error("Error initiating PhonePe payment:", error);
+    setSnackBarState(true);
+    setAlertType("error");
+    setResultMessage("Payment could not be started. Please try again later.");
+  }
+};
 
   const initiateCod = async (customerData) => {
     try {
@@ -1316,7 +1365,8 @@ const Checkout = () => {
                 paddingY: { xs: "10px", sm: "6px" },
               }}
               // serviceable && !loading ? false : true
-              disabled={serviceable && !loading ? false : true}
+              // disabled={serviceable && !loading ? false : true}
+              
             >
               Pay Now
             </Button>

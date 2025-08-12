@@ -16,7 +16,7 @@ const Terms = () => {
             
             <h1 className="edu-title m-t text-[30px] sm:text-[30px] font-bold">Terms and Conditions</h1>
             <hr className="w-full" /> <br />
-            <p>Welcome to THAILASH ORIGINAL THENNAMARAKUDI OIL ! These Terms and Conditions ("Terms") govern your use of our website ("Website") and any services or products provided through it. By accessing or using our Website, you agree to comply with and be bound by these Terms. If you do not agree, please refrain from using our Website.</p>
+            <p>Welcome to THAILASH ORIGINAL THENNAMARAKUDI OIL ! These Terms and Conditions ("Terms") govern your use of our website www.thailash.com and any services or products provided through it. By accessing or using our Website, you agree to comply with and be bound by these Terms. If you do not agree, please refrain from using our Website.</p>
             <br />
             <p className="font-bold">Acceptance of Terms</p>
             <br />
@@ -141,12 +141,12 @@ const Terms = () => {
             <br />
             <p>Any disputes arising out of or related to these Terms shall be resolved through arbitration in accordance with the Arbitration and Conciliation Act, 1996.</p>
             <br />
-            <p>The place of arbitration shall be [Jurisdiction], and the language of arbitration shall be English.</p>
+            <p>The place of arbitration shall be Jurisdiction of india, and the language of arbitration shall be English.</p>
             <br />
             
             <p className="font-bold">Privacy Policy.</p>
             <br />
-            <p>Your use of the Website is also governed by our [Privacy Policy], which outlines how we collect, use, and protect your personal data.</p>
+            <p>Your use of the Website is also governed by our Privacy Policy, which outlines how we collect, use, and protect your personal data.</p>
             <br />
             
             <p className="font-bold"> Force Majeure.</p>
