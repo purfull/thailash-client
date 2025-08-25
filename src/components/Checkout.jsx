@@ -459,7 +459,7 @@ const Checkout = () => {
         city: formData?.city,
         state: customerData?.state,
         cod_amount: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+          formData?.quantity * singleProductData?.offer_price * 0.9 + productData?.[0].delivery_charge
         ),
       },
       orderDetial: {
@@ -468,23 +468,25 @@ const Checkout = () => {
         quantity: formData?.quantity,
         invoiceNumber: `${formattedDate}${random4DigitNumber}`,
         invoiceAmount: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+          formData?.quantity * singleProductData?.offer_price * 0.9 + productData?.[0].delivery_charge
         ),
         buyerName: `${customerData?.first_name} ${customerData?.last_name}`,
         total_product_cost: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9 + 30
+          formData?.quantity * singleProductData?.offer_price * 0.9 + productData?.[0].delivery_charge
         ),
         product_price: singleProductData?.offer_price,
         total_shipment_cost: "",
         sku: singleProductData?.sku,
         gst: customerData?.gst || null,
+        delivery_charge: singleProductData?.delivery_charge
       },
+      productInfo: singleProductData 
     };
 
     const paymentData = {
       orderId,
       orderAmount: Math.floor(
-        formData?.quantity * singleProductData?.offer_price * 0.9
+        (formData?.quantity * singleProductData?.offer_price * 0.9) + productData?.[0].delivery_charge
       ),
       customerEmail: formData?.email,
       customerPhone: formData?.phone,
@@ -512,7 +514,7 @@ const Checkout = () => {
     const orderResponse = await fetch(`${AppEnv.baseUrl}/order/create-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({...orderData, payment_order_id: paymentResponce.orderId }),
+      body: JSON.stringify({...orderData, payment_order_id: paymentResponce.orderId}),
     });
 
     if (!orderResponse.ok) {
@@ -567,7 +569,7 @@ const Checkout = () => {
           city: formData?.city,
           state: customerData?.state,
           cod_amount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price + 30
+            formData?.quantity * singleProductData?.offer_price + productData?.[0].delivery_charge
           ),
         },
         orderDetial: {
@@ -577,7 +579,7 @@ const Checkout = () => {
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
           invoiceAmount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price + 30
+            (formData?.quantity * singleProductData?.offer_price) + productData?.[0].delivery_charge
           ),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost: Math.floor(
@@ -588,6 +590,7 @@ const Checkout = () => {
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
         },
+        productInfo: singleProductData
       };
 
       // Send order data to backend
@@ -611,7 +614,7 @@ const Checkout = () => {
           setAlertType("success");
           setOrderSuccess(true);
 
-          navigate("/success", {
+          navigate(`/success?orderId=${orderResult?.data?.order}`, {
                 state: {
                   invoiceAmount: orderResult.data?.invoiceAmount,
                   order: orderResult.data?.order,
@@ -699,6 +702,7 @@ const Checkout = () => {
 
     setSingleProductData(result?.data[0]);
     setProductData(result?.data);
+    console.log(result?.data)
   };
 
   const getStateAPi = async () => {
@@ -1324,7 +1328,7 @@ const Checkout = () => {
                   {Math.floor(
                     formData?.quantity * (productData?.[0]?.offer_price || 0)
                   )
-                    ? 30
+                    ? productData?.[0].delivery_charge
                     : 0}
                 </Typography>
               </Box>
@@ -1345,7 +1349,7 @@ const Checkout = () => {
                     ? Math.floor(
                         formData?.quantity *
                           (productData?.[0]?.offer_price || 0)
-                      ) + 30
+                      ) + productData?.[0].delivery_charge
                     : 0) || 0}
                 </Typography>
               </Box>
