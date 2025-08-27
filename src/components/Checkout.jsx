@@ -472,10 +472,10 @@ const Checkout = () => {
         ),
         buyerName: `${customerData?.first_name} ${customerData?.last_name}`,
         total_product_cost: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9 + productData?.[0].delivery_charge
+          formData?.quantity * singleProductData?.offer_price * 0.9
         ),
         product_price: singleProductData?.offer_price,
-        total_shipment_cost: "",
+        total_shipment_cost: productData?.[0].delivery_charge,
         sku: singleProductData?.sku,
         gst: customerData?.gst || null,
         delivery_charge: singleProductData?.delivery_charge
@@ -586,7 +586,7 @@ const Checkout = () => {
             formData?.quantity * singleProductData?.offer_price
           ),
           product_price: singleProductData?.offer_price,
-          total_shipment_cost: "",
+          total_shipment_cost: productData?.[0].delivery_charge,
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
         },
