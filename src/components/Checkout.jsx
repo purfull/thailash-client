@@ -148,6 +148,7 @@ const Checkout = () => {
   }, [pincode]);
 
   const createCustomer = async (order) => {
+
     if (
       !formData.phone ||
       !formData.state ||
@@ -309,7 +310,6 @@ const Checkout = () => {
   //     const data = await response.json();
   //     let orderResult = null;
 
-
   //     try {
   //       const orderResponse = await fetch(
   //         `${AppEnv.baseUrl}/order/create-order`,
@@ -436,109 +436,117 @@ const Checkout = () => {
   // };
 
   const initiatePayment = async (customerData) => {
-  try {
-    // Generate Order ID
-    const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
-      .toString()
-      .padStart(4, "0");
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
-    const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
+    try {
+      // Generate Order ID
+    setLoading(true);
+      const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
+        .toString()
+        .padStart(4, "0");
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString("en-CA").replace(/-/g, "");
+      const orderId = `CUST_ORDER_${formattedDate}${random4DigitNumber}`;
 
-    const orderData = {
-      shipments: {
-        add: formData?.address,
-        address_type: "home",
-        phone: customerData?.phone,
-        name: `${formData?.firstName} ${formData?.lastName}`,
-        pin: formData?.postalCode,
-        order: orderId,
-        payment_mode: "Pre-paid",
-        country: "India",
-        shipping_mode: "Surface",
-        city: formData?.city,
-        state: customerData?.state,
-        cod_amount: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9 + productData?.[0].delivery_charge
+      const orderData = {
+        shipments: {
+          add: formData?.address,
+          address_type: "home",
+          phone: customerData?.phone,
+          name: `${formData?.firstName} ${formData?.lastName}`,
+          pin: formData?.postalCode,
+          order: orderId,
+          payment_mode: "Pre-paid",
+          country: "India",
+          shipping_mode: "Surface",
+          city: formData?.city,
+          state: customerData?.state,
+          cod_amount: Math.floor(
+            formData?.quantity * singleProductData?.offer_price * 0.9 +
+              productData?.[0].delivery_charge
+          ),
+        },
+        orderDetial: {
+          state: customerData?.state,
+          isUnion: stateData.find((el) => el.state_name == formData?.state)
+            ?.is_union,
+          quantity: formData?.quantity,
+          invoiceNumber: `${formattedDate}${random4DigitNumber}`,
+          invoiceAmount: Math.floor(
+            formData?.quantity * singleProductData?.offer_price * 0.9 +
+              productData?.[0].delivery_charge
+          ),
+          buyerName: `${customerData?.first_name} ${customerData?.last_name}`,
+          total_product_cost: Math.floor(
+            formData?.quantity * singleProductData?.offer_price * 0.9
+          ),
+          product_price: singleProductData?.offer_price,
+          total_shipment_cost: productData?.[0].delivery_charge,
+          sku: singleProductData?.sku,
+          gst: customerData?.gst || null,
+          delivery_charge: singleProductData?.delivery_charge,
+        },
+        productInfo: singleProductData,
+      };
+
+      const paymentData = {
+        orderId,
+        orderAmount: Math.floor(
+          formData?.quantity * singleProductData?.offer_price * 0.9 +
+            productData?.[0].delivery_charge
         ),
-      },
-      orderDetial: {
-        state: customerData?.state,
-        isUnion: stateData.find((el) => el.state_name == formData?.state)?.is_union,
-        quantity: formData?.quantity,
-        invoiceNumber: `${formattedDate}${random4DigitNumber}`,
-        invoiceAmount: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9 + productData?.[0].delivery_charge
-        ),
-        buyerName: `${customerData?.first_name} ${customerData?.last_name}`,
-        total_product_cost: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9
-        ),
-        product_price: singleProductData?.offer_price,
-        total_shipment_cost: productData?.[0].delivery_charge,
-        sku: singleProductData?.sku,
-        gst: customerData?.gst || null,
-        delivery_charge: singleProductData?.delivery_charge
-      },
-      productInfo: singleProductData 
-    };
+        customerEmail: formData?.email,
+        customerPhone: formData?.phone,
+        customerId: customerData?.id.toString(),
+        // orderData,
+      };
 
-    const paymentData = {
-      orderId,
-      orderAmount: Math.floor(
-        (formData?.quantity * singleProductData?.offer_price * 0.9) + productData?.[0].delivery_charge
-      ),
-      customerEmail: formData?.email,
-      customerPhone: formData?.phone,
-      customerId: customerData?.id.toString(),
-      // orderData,
-    };
+      // Call backend to create PhonePe order
+      const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(paymentData),
+      });
 
+      if (!response.ok) {
+        setLoading(false);
+        throw new Error("Failed to initiate PhonePe payment");
+      }
 
-    // Call backend to create PhonePe order
-    const response = await fetch(`${AppEnv.baseUrl}/payment/create-order`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(paymentData),
-    });
+      const paymentResponce = await response.json();
+      // create order
 
-    if (!response.ok) {
-      setLoading(false)
-      throw new Error("Failed to initiate PhonePe payment")
+      const orderResponse = await fetch(
+        `${AppEnv.baseUrl}/order/create-order`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...orderData,
+            payment_order_id: paymentResponce.orderId,
+          }),
+        }
+      );
 
-    };
+      if (!orderResponse.ok) {
+        setLoading(false);
+        throw new Error("Failed to initiate order");
+      }
 
-    const paymentResponce = await response.json();
-    // create order
-    
-    const orderResponse = await fetch(`${AppEnv.baseUrl}/order/create-order`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({...orderData, payment_order_id: paymentResponce.orderId}),
-    });
+      // Redirect to PhonePe payment page
+      // alert(redirectUrl)
 
-    if (!orderResponse.ok) {
-      
-      setLoading(false)
-      throw new Error("Failed to initiate order")
-    };
-
-
-    // Redirect to PhonePe payment page
-    // alert(redirectUrl)
-    
-    window.location.href = paymentResponce.redirectUrl;
-
-  } catch (error) {
-    console.error("Error initiating PhonePe payment:", error);
-    setSnackBarState(true);
-    setAlertType("error");
-    setResultMessage("Payment could not be started. Please try again later.");
-  }
-};
+      window.location.href = paymentResponce.redirectUrl;
+    } catch (error) {
+      console.error("Error initiating PhonePe payment:", error);
+      setSnackBarState(true);
+    setLoading(false);
+      setAlertType("error");
+      setResultMessage("Payment could not be started. Please try again later.");
+    }
+  };
 
   const initiateCod = async (customerData) => {
     try {
+    setLoading(true);
       const random4DigitNumber = Math.floor(1000 + Math.random() * 9000)
         .toString()
         .padStart(4, "0");
@@ -569,7 +577,8 @@ const Checkout = () => {
           city: formData?.city,
           state: customerData?.state,
           cod_amount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price + productData?.[0].delivery_charge
+            formData?.quantity * singleProductData?.offer_price +
+              productData?.[0].delivery_charge
           ),
         },
         orderDetial: {
@@ -579,7 +588,8 @@ const Checkout = () => {
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
           invoiceAmount: Math.floor(
-            (formData?.quantity * singleProductData?.offer_price) + productData?.[0].delivery_charge
+            formData?.quantity * singleProductData?.offer_price +
+              productData?.[0].delivery_charge
           ),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost: Math.floor(
@@ -590,7 +600,7 @@ const Checkout = () => {
           sku: singleProductData?.sku,
           gst: customerData?.gst ? customerData?.gst : null,
         },
-        productInfo: singleProductData
+        productInfo: singleProductData,
       };
 
       // Send order data to backend
@@ -615,10 +625,10 @@ const Checkout = () => {
           setOrderSuccess(true);
 
           navigate(`/success?orderId=${orderResult?.data?.order}`, {
-                state: {
-                  invoiceAmount: orderResult.data?.invoiceAmount,
-                  order: orderResult.data?.order,
-                },
+            state: {
+              invoiceAmount: orderResult.data?.invoiceAmount,
+              order: orderResult.data?.order,
+            },
           });
           setWayBill(orderResult.data?.waybill);
           // console.log(orderSuccess, wayBill);
@@ -633,7 +643,6 @@ const Checkout = () => {
             "Cannot process order at this time. Please try again later or contact support."
           );
         });
-        
     } catch (error) {
       // console.error("Error initiating payment:", error);
       setLoading(false);
@@ -702,7 +711,7 @@ const Checkout = () => {
 
     setSingleProductData(result?.data[0]);
     setProductData(result?.data);
-    console.log(result?.data)
+    console.log(result?.data);
   };
 
   const getStateAPi = async () => {
@@ -1335,7 +1344,7 @@ const Checkout = () => {
 
               <Divider sx={{ my: 1 }} />
 
-              <Box
+              {/* <Box
                 sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
               >
                 <Typography variant="subtitle1" fontWeight="bold">
@@ -1352,7 +1361,7 @@ const Checkout = () => {
                       ) + productData?.[0].delivery_charge
                     : 0) || 0}
                 </Typography>
-              </Box>
+              </Box> */}
             </Box>
             {/* onClick={initiatePayment} */}
             <Button
@@ -1370,9 +1379,12 @@ const Checkout = () => {
               }}
               // serviceable && !loading ? false : true
               // disabled={serviceable && !loading ? false : true}
-              
             >
-              Pay Now
+              Pay Now ₹
+              {formData?.quantity && singleProductData?.offer_price
+                ?  Math.floor(formData.quantity * singleProductData.offer_price * 0.9 +
+                  (productData?.[0]?.delivery_charge || 0))
+                : 0}
             </Button>
             <Button
               // onClick={initiatePayment}
@@ -1398,10 +1410,11 @@ const Checkout = () => {
               }}
               disabled={serviceable && !loading ? false : true}
             >
-              {loading ? (
-                <CircularProgress size={24} color={"#056E3D"} />
-              ) : (
-                "Pay COD"
+              Pay COD ₹
+              {Math.floor(
+                (formData?.quantity || 0) *
+                  (singleProductData?.offer_price || 0) +
+                  (productData?.[0]?.delivery_charge || 0)
               )}
             </Button>
           </Box>
