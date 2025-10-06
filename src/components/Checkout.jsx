@@ -148,9 +148,9 @@ const Checkout = () => {
   }, [pincode]);
 
   const createCustomer = async (order) => {
-
     if (
       !formData.phone ||
+      formData.phone.length < 10 ||
       !formData.state ||
       !formData.address ||
       !formData.firstName ||
@@ -1159,7 +1159,7 @@ const Checkout = () => {
                   variant="outlined"
                   name="phone"
                   value={formData.phone}
-                  type="number"
+                  type="phone"
                   onChange={handleChange}
                   required
                   InputProps={{
@@ -1174,9 +1174,9 @@ const Checkout = () => {
                       MozAppearance: "textfield",
                     },
                   }}
-                  error={errorMessage && !formData.phone}
+                  error={errorMessage && (!formData.phone || formData.phone?.length < 10)}
                   helperText={
-                    errorMessage && formData.phone?.length != 10
+                    errorMessage && formData.phone?.length < 10
                       ? "Phone number must be at least 10 digits "
                       : ""
                   }
