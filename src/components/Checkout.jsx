@@ -460,8 +460,7 @@ const Checkout = () => {
           city: formData?.city,
           state: customerData?.state,
           cod_amount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price * 0.9 +
-              productData?.[0].delivery_charge
+            formData?.quantity * singleProductData?.offer_price - 25
           ),
         },
         orderDetial: {
@@ -471,12 +470,11 @@ const Checkout = () => {
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
           invoiceAmount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price * 0.9 +
-              productData?.[0].delivery_charge
+            formData?.quantity * singleProductData?.offer_price - 25
           ),
           buyerName: `${customerData?.first_name} ${customerData?.last_name}`,
           total_product_cost: Math.floor(
-            formData?.quantity * singleProductData?.offer_price * 0.9
+            formData?.quantity * singleProductData?.offer_price - 25
           ),
           product_price: singleProductData?.offer_price,
           total_shipment_cost: productData?.[0].delivery_charge,
@@ -490,8 +488,7 @@ const Checkout = () => {
       const paymentData = {
         orderId,
         orderAmount: Math.floor(
-          formData?.quantity * singleProductData?.offer_price * 0.9 +
-            productData?.[0].delivery_charge
+          formData?.quantity * singleProductData?.offer_price - 25
         ),
         customerEmail: formData?.email,
         customerPhone: formData?.phone,
@@ -577,8 +574,7 @@ const Checkout = () => {
           city: formData?.city,
           state: customerData?.state,
           cod_amount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price +
-              productData?.[0].delivery_charge
+            formData?.quantity * singleProductData?.offer_price
           ),
         },
         orderDetial: {
@@ -588,9 +584,7 @@ const Checkout = () => {
           quantity: formData?.quantity,
           invoiceNumber: `${formattedDate}${random4DigitNumber}`,
           invoiceAmount: Math.floor(
-            formData?.quantity * singleProductData?.offer_price +
-              productData?.[0].delivery_charge
-          ),
+            formData?.quantity * singleProductData?.offer_price),
           buyerName: customerData?.first_name + " " + customerData?.last_name,
           total_product_cost: Math.floor(
             formData?.quantity * singleProductData?.offer_price
@@ -1333,12 +1327,13 @@ const Checkout = () => {
               >
                 <Typography>Delivery Fee</Typography>
                 <Typography>
-                  ₹
+                  {/* ₹
                   {Math.floor(
                     formData?.quantity * (productData?.[0]?.offer_price || 0)
                   )
                     ? productData?.[0].delivery_charge
-                    : 0}
+                    : 0} */}
+                    Free
                 </Typography>
               </Box>
 
@@ -1382,8 +1377,7 @@ const Checkout = () => {
             >
               Pay Now ₹
               {formData?.quantity && singleProductData?.offer_price
-                ?  Math.floor(formData.quantity * singleProductData.offer_price * 0.9 +
-                  (productData?.[0]?.delivery_charge || 0))
+                ?  Math.floor(formData.quantity * singleProductData.offer_price - 25)
                 : 0}
             </Button>
             <Button
@@ -1413,8 +1407,7 @@ const Checkout = () => {
               Pay COD ₹
               {Math.floor(
                 (formData?.quantity || 0) *
-                  (singleProductData?.offer_price || 0) +
-                  (productData?.[0]?.delivery_charge || 0)
+                  (singleProductData?.offer_price || 0)
               )}
             </Button>
           </Box>
