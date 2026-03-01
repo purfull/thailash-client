@@ -74,8 +74,13 @@ const Home = () => {
       <div className='price-container h-[86vh] w-[15%] shadow-md border-l border-[#046E3D40] hidden sm:block fixed bottom-0 right-0 z-[200] bg-[#E9FFF3] '>
         <p className='font-semibold text-lg p-2 mt-[5vh]'>{getPorductData?.title}</p>
         <p className=' text  p-2 '>{getPorductData?.description}</p>
-        <p className=' font-semibold text-lg  px-2 mt-4 '>Now at <span className='text-red-600 '>{`-${Math.round(((getPorductData?.actual_price - getPorductData?.offer_price) / getPorductData?.actual_price) * 100)}%`}</span></p>
-        <p className=' text  px-2 '><span className=' text mr-2' style={{ textDecoration: 'line-through' }}>₹{getPorductData?.actual_price}</span><span className='text-2xl font-semibold'>₹{getPorductData?.offer_price}</span></p>
+        <p className='  text  px-2 mt-4 '>Now at <span className='text-lg font-semibold'>₹{getPorductData?.offer_price}</span>
+        {/* <span className='text-red-600 '>{`-${Math.round(((getPorductData?.actual_price - getPorductData?.offer_price) / getPorductData?.actual_price) * 100)}%`}</span> */}
+        </p>
+        <p className=' text  p-2 '><span className='font-semibold text-[#056E3D]'>*Free delivery </span> for all orders </p>
+        {/* <p className=' text  px-2 '>
+        <span className=' text mr-2' style={{ textDecoration: 'line-through' }}>₹{getPorductData?.actual_price}</span>
+        <span className='text-2xl font-semibold'>₹{getPorductData?.offer_price}</span></p> */}
         <div className="mt-8 flex flex-col justify-center items-center">
           {/* <button className='mr-4 py-[7px] w-[90%] rounded-[25px] border-2 border-[#056E3D] text-[#056E3D] cursor-pointer font-bold'>More Info</button> */}
           <button className=' py-[7px] w-[90%] rounded-[25px] text-[#B65402] cursor-pointer font-bold bg-gradient-to-r from-[#EBAC0A] to-[#FFDE47]' onClick={handleCheckoutClick}>Buy Now</button>
