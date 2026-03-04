@@ -97,3 +97,25 @@ body {
   line-height: 2;
   word-spacing: 2px;
 }
+
+/* Marquee Animation */
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: #056E3D;
+  color: white;
+  padding: 8px 0;
+  display: flex;
+  white-space: nowrap;
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 15s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}

@@ -70,7 +70,7 @@ const Home = () => {
   };
   
   return (
-    <div id='home' className='w-full sm:w-[85%]' >
+    <div id='home' className='w-full sm:w-[85%] pt-[30px]' >
       <div className='price-container h-[86vh] w-[15%] shadow-md border-l border-[#046E3D40] hidden sm:block fixed bottom-0 right-0 z-[200] bg-[#E9FFF3] '>
         <p className='font-semibold text-lg p-2 mt-[5vh]'>{getPorductData?.title}</p>
         <p className=' text  p-2 '>{getPorductData?.description}</p>
